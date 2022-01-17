@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
+import frc.robot.commands.auto.PickupOne;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -20,27 +24,23 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final ClimbSubsystem m_climb = new ClimbSubsystem();
 
-  private double driveSpeed = 1;
+  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
-    m_drive.setMaxOutput(driveSpeed);
+    autoChooser.setDefaultOption("Pickup One Cargo", new PickupOne(m_drive));
 
-    // Configure default commands
-    // Set the default drive command to split-stick arcade drive
     m_drive.setDefaultCommand(
-        // A split-stick arcade command, with forward/backward controlled by the left
-        // hand, and turning controlled by the right.
         new RunCommand(
-            () ->
-                m_drive.arcadeDrive(
+            () -> m_drive.arcadeDrive(
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
             m_drive));
@@ -62,5 +62,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return null;
+  }
+
+  public void reset(){
+    m_drive.resetOdometry(new Pose2d());
   }
 }
