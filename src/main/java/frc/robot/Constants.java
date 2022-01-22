@@ -31,7 +31,9 @@ public final class Constants {
     public static final double kTrackwidthMeters = Units.inchesToMeters(22);
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
-    public static final Boolean kGyroReversed = false; // WPIlib is ccw positive, use to invert gyro match
+    public static final Boolean kGyroReversed = false; 
+    // WPIlib is ccw positive, use to invert gyro match
+    // NavX = true, ADIS16470 = false
 
     // Encoder count conversion on the spark max for NEOs from rotations to SI units 
     public static final double kEncoderDistanceConversionFactor = ((double) (Math.PI*kWheelDiameterMeters)/(kGearRatio));
@@ -41,7 +43,7 @@ public final class Constants {
     public static final double ksVolts = 0.19627;   //0.169
     public static final double kvVoltSecondsPerMeter = 2.7762;  //2.24
     public static final double kaVoltSecondsSquaredPerMeter = 0.14895;  //0.0435
-    public static final double kPDriveVel = 2;  //2.4 8/14 2.24 Tuning to get better PIDF response
+    public static final double kPDriveVel = 2.6295;  //2.4 8/14 2.24 Tuning to get better PIDF response
 
     // Log of sysID values
     // Jan16 Drivebase no weight Ks = 0.19627 Kv = 2.7762 Ka = 0.14895 Kp = 2.6295

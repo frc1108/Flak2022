@@ -47,7 +47,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMain,m_rightMain);
 
   // Wheel velocity PID control for robot
-  // TODO sysid for kP, kS, kV, kA
   private final PIDController m_leftPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
   private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
   private final SimpleMotorFeedforward m_leftfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
@@ -61,12 +60,16 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_leftEncoder;
   private final RelativeEncoder m_rightEncoder;
   private final DifferentialDriveOdometry m_odometry;
+  // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+
+  // private final AnalogInput m_ultrasonic = new AnalogInput(DriveConstants.kUltrasonicPort);
+
   
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
-    stop();
+    idle();
 
     // Restores default CANSparkMax settings
     m_leftMain.restoreFactoryDefaults();
@@ -133,7 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
    * tankDriveFeedforwardPID: set wheel speed of drive motors closed loop
    */
 
-  public void stop(){
+  public void idle(){
     m_leftMain.stopMotor();
     m_leftFollow.stopMotor();
     m_rightMain.stopMotor();
@@ -146,6 +149,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double fwd, double rot) {
     m_drive.arcadeDrive(m_speedSlew.calculate(-fwd), 0.8*m_turnSlew.calculate(rot));
+  }
+
+  public void curvatureDrive(double fwd, double rot, boolean quickTurn) {
+    m_drive.curvatureDrive(m_speedSlew.calculate(-fwd), m_turnSlew.calculate(rot), quickTurn);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -178,18 +185,18 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
   }
 
   public double getHeadingCW() {
-    // Not negating
     return Math.IEEEremainder(-m_gyro.getAngle(), 360);
   }
 
   public double getTurnRateCW() {
-    // Not negating
     return -m_gyro.getRate();
   }
 
    /***** Encoder methods
    * resetEncoders: sets encoders to zero
-   * getHeading: returns gyro angle in degrees
+   * getAverageEncoderDistance: get combined left and right changes in position
+   * getLeftEncoder: get left RelativeEncoder
+   * getRightEncoder: get right RelativeEncoder
    */
 
   public void resetEncoders() {
