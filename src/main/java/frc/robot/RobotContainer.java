@@ -7,13 +7,16 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
 import frc.robot.commands.auto.PickupOne;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,7 +28,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
   private final ClimbSubsystem m_climb = new ClimbSubsystem();
-
+  private final ShooterSubsystem m_shooter = new ShooterSubsystem();
+  
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -52,7 +56,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    //testing kick and shoot code
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(49), ()->m_shooter.shoot(0),m_shooter).withTimeout(3));
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+        .toggleWhenActive(new StartEndCommand(()->m_shooter.kick(.3), ()->m_shooter.kick(0),m_shooter).withTimeout(3));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

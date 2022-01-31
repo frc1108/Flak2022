@@ -62,7 +62,11 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
   }
-
+  public static final class ShooterConstants {
+    public static final int kLeftShooterPort = 5;
+    public static final int kRightShooterPort = 6;
+    public static final int kKickInPort = 7;
+  }
   public static final class AutoConstants {
     // Adjust the max robot speed during auto trajectories ~80% of max speed
     // During testing set these values lower to check for correct movements
