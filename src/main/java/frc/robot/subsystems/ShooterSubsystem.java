@@ -7,9 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import frc.robot.Constants.ShooterConstants;
 
@@ -19,34 +16,42 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSubsystem extends SubsystemBase {
   private final CANSparkMax m_leftShooter = new CANSparkMax(ShooterConstants.kLeftShooterPort, MotorType.kBrushless);
   private final CANSparkMax m_rightShooter = new CANSparkMax(ShooterConstants.kRightShooterPort, MotorType.kBrushless);
-  private final VictorSPX m_kickIn = new VictorSPX(ShooterConstants.kKickInPort);
+  private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
-    stop();
+    stopKick();
+    stopShoot();
     m_leftShooter.restoreFactoryDefaults();
     m_rightShooter.restoreFactoryDefaults();
-    m_kickIn.configFactoryDefault();
+    m_kickIn.restoreFactoryDefaults();
 
     m_rightShooter.setIdleMode(IdleMode.kCoast);
     m_leftShooter.setIdleMode(IdleMode.kCoast);
-    m_kickIn.setNeutralMode(NeutralMode.Brake);
+    m_kickIn.setIdleMode(IdleMode.kBrake);
 
-    m_leftShooter.setInverted(true);
-    m_rightShooter.setInverted(false);
-
-    m_leftShooter.follow(m_rightShooter);
+    m_leftShooter.setInverted(false);
+    m_kickIn.setInverted(false);
+    //this makes the right shooter follow the left, but inversed = true
+    m_rightShooter.follow(m_leftShooter, true);
 
     m_rightShooter.setSmartCurrentLimit(40, 60);
     m_leftShooter.setSmartCurrentLimit(40, 60);
 
     m_rightShooter.burnFlash();
     m_leftShooter.burnFlash();
+    m_kickIn.burnFlash();
   }
-  public void stop() {
+  /* public void stopAll() {
     m_rightShooter.stopMotor();
-    m_kickIn.neutralOutput();
+    m_kickIn.stopMotor();
+  } */
+  public void stopKick() {
+    m_kickIn.stopMotor();
   }
-  private static double convertPercentToVolts (double percent) {
+  public void stopShoot() {
+    m_leftShooter.stopMotor();
+  }
+  private static double convertPercentTo12Volts (double percent) {
     return percent*(3/25);
   }
 
@@ -55,15 +60,15 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speedPercent Speed on a scale from 0 to 100
    */
   public void shoot(double speedPercent) {
-    m_rightShooter.setVoltage(convertPercentToVolts(speedPercent));
+    m_leftShooter.setVoltage(convertPercentTo12Volts(speedPercent));
   }
 
   /**
    * Controls the kick in redline motor
-   * @param speed Speed Percent from -1.0 to 1.0
+   * @param speed Speed Percent from 0 to 100
    */
   public void kick(double speed) {
-    m_kickIn.set(ControlMode.PercentOutput, speed);
+    m_kickIn.setVoltage(convertPercentTo12Volts(speed));
   }
   @Override
   public void periodic() {
