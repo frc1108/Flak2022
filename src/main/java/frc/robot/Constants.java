@@ -61,11 +61,27 @@ public final class Constants {
   }
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+    public static final double kOperatorLeftDeadband = 0.1; //the range around zero
   }
   public static final class ShooterConstants {
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;
+
+    public static final int kPlateDownChannel = 3;
+    public static final int kPlateUpChannel = 2;
+
+    public static final int kTiltExtendChannel = 1;
+    public static final int kTiltRetractChannel = 0;
+  }
+  public static final class IntakeConstants {
+    public static final int kIntakePort = 42;
+    public static final int kIntakeVolts = 6;
+    public static final int kIntakeModifier = 12; //12 is the max
+
+    public static final int kIntakeExtendChannel = 5;
+    public static final int kIntakeRetractChannel = 4;
   }
   public static final class AutoConstants {
     // Adjust the max robot speed during auto trajectories ~80% of max speed
@@ -82,4 +98,3 @@ public final class Constants {
     public static final double  kDifferentialDriveKinematicsConstraint = 0.3;
   }
 }
-

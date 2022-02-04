@@ -9,11 +9,46 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import frc.robot.Constants.IntakeConstants;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class IntakeSubsystem extends SubsystemBase {
+  private final CANSparkMax m_intake = new CANSparkMax(IntakeConstants.kIntakePort, MotorType.kBrushless);
+  private final DoubleSolenoid m_intakeExtender = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, IntakeConstants.kIntakeExtendChannel, IntakeConstants.kIntakeRetractChannel);
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() {}
+  public IntakeSubsystem() {
+    stopIntake();
+    m_intakeExtender.set(Value.kReverse);
 
+    m_intake.restoreFactoryDefaults();
+
+    m_intake.setIdleMode(IdleMode.kBrake);
+
+    m_intake.setInverted(false);
+
+    m_intake.setSmartCurrentLimit(40, 60);
+
+    m_intake.burnFlash();
+  }
+  
+  public void toggleExtension() {
+    m_intakeExtender.toggle();
+  }
+
+  public void stopIntake() {
+    m_intake.stopMotor();
+  }
+
+  /* public void intake(boolean inverted) {
+    int direction = inverted ? 1 : -1;
+    m_intake.setVoltage(IntakeConstants.kIntakeVolts*direction);
+
+  } */
+  public void intake(double speed) {
+    m_intake.setVoltage(speed*IntakeConstants.kIntakeModifier);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
