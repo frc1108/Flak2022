@@ -9,8 +9,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
+import frc.robot.commands.Cycling;
+import frc.robot.commands.FlipPlate;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.auto.PickupOne;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -67,10 +71,14 @@ public class RobotContainer {
    /*  new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(49), ()->m_shooter.stopShoot(),m_shooter));
      */
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .toggleWhenActive(new StartEndCommand(()->m_shooter.kick(50), ()->m_shooter.stopKick(),m_shooter));
+        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whenPressed(new Shoot(m_shooter, 35, 8));
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .whenPressed(new Cycling(m_shooter));
 
     /* new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whenPressed(new InstantCommand(()->m_shooter.shoot(50), m_shooter).withName("shooting"));
@@ -80,7 +88,11 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whenPressed(new InstantCommand(()->m_intake.toggleExtension(), m_intake));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whenPressed(new InstantCommand(()->m_shooter.togglePlate()));
+        .whenPressed(new FlipPlate(m_shooter));
+    new POVButton(m_operatorController, 0)
+        .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
+    new POVButton(m_operatorController, 180)
+        .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
   }

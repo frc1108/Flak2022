@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final CANSparkMax m_leftShooter = new CANSparkMax(ShooterConstants.kLeftShooterPort, MotorType.kBrushless);
@@ -96,6 +97,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void kick(double speed) {
     m_kickIn.setVoltage(convertPercentTo12Volts(speed));
   }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

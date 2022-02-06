@@ -69,8 +69,8 @@ public final class Constants {
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;
 
-    public static final int kPlateDownChannel = 3;
-    public static final int kPlateUpChannel = 2;
+    public static final int kPlateDownChannel = 2;
+    public static final int kPlateUpChannel = 3;
 
     public static final int kTiltExtendChannel = 1;
     public static final int kTiltRetractChannel = 0;
