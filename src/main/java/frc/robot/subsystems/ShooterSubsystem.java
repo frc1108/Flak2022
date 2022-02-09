@@ -39,7 +39,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftShooter.setInverted(false);
     m_kickIn.setInverted(false);
     //this makes the right shooter follow the left, but inversed = true
-    m_rightShooter.follow(m_leftShooter, true);
+    //m_rightShooter.follow(m_leftShooter, true);
+    m_rightShooter.setInverted(true);
 
     m_rightShooter.setSmartCurrentLimit(40, 60);
     m_leftShooter.setSmartCurrentLimit(40, 60);
@@ -66,6 +67,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stopAll() {
+    m_leftShooter.stopMotor();
     m_rightShooter.stopMotor();
     m_kickIn.stopMotor();
   } 
@@ -74,6 +76,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   public void stopShoot() {
     m_leftShooter.stopMotor();
+    m_rightShooter.stopMotor();
   }
   private static double convertPercentTo12Volts (double percent) {
     return percent*3/25;
@@ -84,7 +87,9 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speedPercent Speed on a scale from 0 to 100
    */
   public void shoot(double speedPercent) {
-    m_leftShooter.setVoltage(convertPercentTo12Volts(speedPercent));
+    double slower = speedPercent-30;
+    m_leftShooter.setVoltage(convertPercentTo12Volts(slower));
+    m_rightShooter.setVoltage(convertPercentTo12Volts(speedPercent));
   } 
   /* public void shoot(double volts) {
     m_leftShooter.setVoltage(volts);

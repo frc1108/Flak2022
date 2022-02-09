@@ -143,6 +143,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightFollow.stopMotor();
   }
 
+  public void changeIdleMode(IdleMode idleMode) {
+    m_leftMain.setIdleMode(idleMode);
+    m_leftFollow.setIdleMode(idleMode);
+    m_rightMain.setIdleMode(idleMode);
+    m_rightFollow.setIdleMode(idleMode);
+  }
+
   public void setMaxOutput(double maxOutput) {
     m_drive.setMaxOutput(maxOutput);
   }

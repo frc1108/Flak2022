@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -68,27 +70,33 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //testing kick and shoot code
-   /*  new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(49), ()->m_shooter.stopShoot(),m_shooter));
-     */
+
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 35, 8));
+        .whenPressed(new Shoot(m_shooter, 54, 8));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whenPressed(new Cycling(m_shooter));
-
-    /* new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(()->m_shooter.shoot(50), m_shooter).withName("shooting"));
-    new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whenPressed(new InstantCommand(()->m_shooter.kick(30), m_shooter).withName("kicking"));
- */
+    new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
+        .whileHeld(new RunCommand(()->m_shooter.kick(-25), m_shooter));
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .whileActiveOnce(new RunCommand(
+            () -> m_drive.arcadeDrive(
+                    (m_driverController.getLeftY()*OIConstants.kDriverSlowModifier),
+                    (m_driverController.getRightX())*OIConstants.kDriverSlowModifier),
+            m_drive
+        )).whileActiveOnce(new StartEndCommand(
+            () -> m_drive.changeIdleMode(IdleMode.kCoast),
+            () -> m_drive.changeIdleMode(IdleMode.kBrake)));
+    
+    //Below may or may not be a drift button
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        .whileActiveOnce(new StartEndCommand(
+            () -> m_drive.changeIdleMode(IdleMode.kCoast),
+            () -> m_drive.changeIdleMode(IdleMode.kBrake)));
+    
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whenPressed(new InstantCommand(()->m_intake.toggleExtension(), m_intake));
-    new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whenPressed(new FlipPlate(m_shooter));
     new POVButton(m_operatorController, 0)
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
     new POVButton(m_operatorController, 180)
