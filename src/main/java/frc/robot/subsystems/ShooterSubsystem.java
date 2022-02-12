@@ -87,7 +87,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speedPercent Speed on a scale from 0 to 100
    */
   public void shoot(double speedPercent) {
-    double slower = speedPercent-30;
+    double slower = speedPercent-15;
     m_leftShooter.setVoltage(convertPercentTo12Volts(slower));
     m_rightShooter.setVoltage(convertPercentTo12Volts(speedPercent));
   } 

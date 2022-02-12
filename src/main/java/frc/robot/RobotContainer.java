@@ -21,6 +21,7 @@ import frc.robot.commands.auto.PickupOne;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final DriveSubsystem m_drive = new DriveSubsystem();
   private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  private final LEDSubsystem m_led = new LEDSubsystem();
   
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -74,7 +76,7 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 54, 8));
+        .whenPressed(new Shoot(m_shooter, 41, 8));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -103,6 +105,12 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
+    new POVButton(m_driverController, 0)
+        .whenPressed(new InstantCommand(()->m_led.setRed()));
+    new POVButton(m_driverController, 90)
+        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
+    new POVButton(m_driverController, 180)
+        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
   }
 
   /**

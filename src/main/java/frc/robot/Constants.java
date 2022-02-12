@@ -40,12 +40,13 @@ public final class Constants {
     public static final double kEncoderVelocityConversionFactor = ((double) (Math.PI*kWheelDiameterMeters)/(60*kGearRatio));
 
     // Tuning parameters, use sysid to determine values
-    public static final double ksVolts = 0.19627;   //0.169
-    public static final double kvVoltSecondsPerMeter = 2.7762;  //2.24
-    public static final double kaVoltSecondsSquaredPerMeter = 0.14895;  //0.0435
-    public static final double kPDriveVel = 2.6295;  //2.4 8/14 2.24 Tuning to get better PIDF response
+    public static final double ksVolts = 0.17387;   //0.169
+    public static final double kvVoltSecondsPerMeter = 2.3243;  //2.24
+    public static final double kaVoltSecondsSquaredPerMeter = 0.39228;  //0.0435
+    public static final double kPDriveVel = 2.5205;  //2.4 8/14 2.24 Tuning to get better PIDF response
 
     // Log of sysID values
+    // Feb12 Drivebase Ks = 0.17387 Kv = 2.3243 Ka = 0.39228 Kp = 2.5205
     // Jan16 Drivebase no weight Ks = 0.19627 Kv = 2.7762 Ka = 0.14895 Kp = 2.6295
 
     // PID turning parameter and closed loop driving paramters. Uncomment to use
@@ -97,5 +98,9 @@ public final class Constants {
     // Constraints for trajectory to reduce speed around tight corners
     public static final double kmaxCentripetalAccelerationMetersPerSecondSq = 0.03;
     public static final double  kDifferentialDriveKinematicsConstraint = 0.3;
+  }
+  public static final class LEDConstants {
+    public static final int kLEDPort = 9;
+    public static final int kLEDLength = 150;
   }
 }

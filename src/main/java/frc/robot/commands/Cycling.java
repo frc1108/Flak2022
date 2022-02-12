@@ -11,9 +11,7 @@ public class Cycling extends SequentialCommandGroup{
             new InstantCommand(() -> {
                 m_shooter.plateDown();
             }),
-            new WaitCommand(0.3),
-            //new TimedKick(m_shooter, 2),
-            new WaitCommand(0.1),
+            new WaitCommand(0.75),
             new FlipPlate(m_shooter),
             new WaitCommand(0.1),
             new TimedKick(m_shooter, 2),

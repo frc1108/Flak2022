@@ -4,8 +4,8 @@
   "encoding": false,
   "gearing denominator": 1.0,
   "gearing numerator": 8.45,
-  "gyro": "None",
-  "gyro ctor": "1",
+  "gyro": "ADIS16470",
+  "gyro ctor": "SPI (Onboard CS0)",
   "is drivetrain": true,
   "motor controllers": [
     "SPARK MAX (Brushless)",
