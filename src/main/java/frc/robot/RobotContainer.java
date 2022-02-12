@@ -4,12 +4,28 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
+import frc.robot.commands.Cycling;
+import frc.robot.commands.FlipPlate;
+import frc.robot.commands.Shoot;
+import frc.robot.commands.auto.PickupOne;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,30 +36,32 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final ShooterSubsystem m_shooter = new ShooterSubsystem();
+  private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  private final LEDSubsystem m_led = new LEDSubsystem();
+  
+  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
-  private double driveSpeed = 1;
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
-    m_drive.setMaxOutput(driveSpeed);
-
-    // Configure default commands
-    // Set the default drive command to split-stick arcade drive
+    autoChooser.setDefaultOption("Pickup One Cargo", new PickupOne(m_drive));
     m_drive.setDefaultCommand(
-        // A split-stick arcade command, with forward/backward controlled by the left
-        // hand, and turning controlled by the right.
         new RunCommand(
-            () ->
-                m_drive.arcadeDrive(
+            () -> m_drive.arcadeDrive(
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
             m_drive));
+    m_intake.setDefaultCommand(
+        new RunCommand(
+            () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
+            m_intake));
   }
 
   /**
@@ -52,7 +70,48 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    //testing kick and shoot code
+
+    new JoystickButton(m_operatorController, XboxController.Button.kB.value)
+        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whenPressed(new Shoot(m_shooter, 41, 8));
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
+    new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
+        .whileHeld(new RunCommand(()->m_shooter.kick(-25), m_shooter));
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .whileActiveOnce(new RunCommand(
+            () -> m_drive.arcadeDrive(
+                    (m_driverController.getLeftY()*OIConstants.kDriverSlowModifier),
+                    (m_driverController.getRightX())*OIConstants.kDriverSlowModifier),
+            m_drive
+        )).whileActiveOnce(new StartEndCommand(
+            () -> m_drive.changeIdleMode(IdleMode.kCoast),
+            () -> m_drive.changeIdleMode(IdleMode.kBrake)));
+    
+    //Below may or may not be a drift button
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        .whileActiveOnce(new StartEndCommand(
+            () -> m_drive.changeIdleMode(IdleMode.kCoast),
+            () -> m_drive.changeIdleMode(IdleMode.kBrake)));
+    
+    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
+        .whenPressed(new InstantCommand(()->m_intake.toggleExtension(), m_intake));
+    new POVButton(m_operatorController, 0)
+        .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
+    new POVButton(m_operatorController, 180)
+        .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
+    new JoystickButton(m_operatorController, XboxController.Button.kX.value)
+        .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
+    new POVButton(m_driverController, 0)
+        .whenPressed(new InstantCommand(()->m_led.setRed()));
+    new POVButton(m_driverController, 90)
+        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
+    new POVButton(m_driverController, 180)
+        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -62,5 +121,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return null;
+  }
+
+  public void reset(){
+    m_drive.resetOdometry(new Pose2d());
   }
 }
