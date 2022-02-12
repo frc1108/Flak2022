@@ -26,7 +26,7 @@ public final class Constants {
     // Physical robot parameters
     public static final int kEncoderCPR = 42;  // NEO motor encoder Counts per revolution
     public static final double kGearRatio = 8.45; // Toughbox mini gear ratio
-    public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Wheel diameter
+    public static final double kWheelDiameterMeters = Units.inchesToMeters(6); // Wheel diameter
     // Use sysid angular to determine the best robot wheel width (may not match tape measurer)
     public static final double kTrackwidthMeters = Units.inchesToMeters(22);
     public static final DifferentialDriveKinematics kDriveKinematics =
