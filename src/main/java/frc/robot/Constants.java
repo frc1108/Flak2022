@@ -67,6 +67,7 @@ public final class Constants {
     public static final double kDriverSlowModifier = 0.4; //modifier for slow mode
   }
   public static final class ShooterConstants {
+    public static final double kShooterPercent = 41;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;

@@ -37,6 +37,12 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
   public void toggleExtension() {
     m_intakeExtender.toggle();
   }
+  public void extend() {
+    m_intakeExtender.set(Value.kForward);
+  }
+  public void retract() {
+    m_intakeExtender.set(Value.kReverse);
+  }
 
   public void stopIntake() {
     m_intake.stopMotor();

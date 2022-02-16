@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class PickupOne extends SequentialCommandGroup {
-  public PickupOne(DriveSubsystem m_robotDrive) {        
+public class FourBallSeries extends SequentialCommandGroup {
+  public FourBallSeries(DriveSubsystem m_robotDrive) {        
       TrajectoryConfig fwdConfig = new TrajectoryConfig(2, 3);
       TrajectoryConfig revConfig = new TrajectoryConfig(2, 3).setReversed(true);
       
