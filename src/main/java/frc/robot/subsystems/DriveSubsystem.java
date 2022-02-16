@@ -123,10 +123,10 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
    */
   @Override
   public void periodic() {
-    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), -m_rightEncoder.getPosition());
+    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Dist", -m_rightEncoder.getPosition());  
+    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
   }
 
   /***** Drivetrain methods
@@ -165,7 +165,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     m_leftMain.setVoltage(leftVolts);
-    m_rightMain.setVoltage(-rightVolts);
+    m_rightMain.setVoltage(rightVolts);
     m_drive.feed();
 }
 
@@ -173,7 +173,7 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
     m_leftMain.setVoltage(m_leftfeedforward.calculate(leftVelocitySetpoint)
         + m_leftPID.calculate(m_leftEncoder.getVelocity(), leftVelocitySetpoint));
     m_rightMain.setVoltage(m_rightfeedforward.calculate(rightVelocitySetpoint)
-        + m_rightPID.calculate(-m_rightEncoder.getVelocity(), rightVelocitySetpoint));
+        + m_rightPID.calculate(m_rightEncoder.getVelocity(), rightVelocitySetpoint));
   m_drive.feed();
 }
   
@@ -241,7 +241,7 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(),-m_rightEncoder.getVelocity());
+    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(),m_rightEncoder.getVelocity());
   } 
 
   /***** Trajectory methods - make paths for robot to follow 
@@ -270,10 +270,10 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
-  protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
+/*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
     return TrajectoryUtil.fromPathweaverJson(
         Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
-  }
+  } */
 
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
@@ -284,14 +284,14 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
       return new Trajectory();
     }
   }
-  public Trajectory loadTrajectoryFromFile(String filename) {
+/*   public Trajectory loadTrajectoryFromFile(String filename) {
     try {
       return loadTrajectory(filename);
     } catch (IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + filename, false);
       return new Trajectory();
     }
-  }
+  } */
 
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);
