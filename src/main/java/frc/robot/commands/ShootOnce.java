@@ -13,7 +13,7 @@ public class ShootOnce extends ParallelCommandGroup {
                 }),
                 new WaitCommand(0.75),
                 new FlipPlate(m_shooter)),
-            new TimedShoot(m_shooter, 1) //this should give the command group a max runtime of maxTime seconds :/
+            new TimedShoot(m_shooter, 1.5) //this should give the command group a max runtime of maxTime seconds :/
         );
     }
     
