@@ -70,6 +70,25 @@ public final class Constants {
     public static final double kShooterPercent = 37;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
+
+    public static final double kLeftShooterKs = 0.058808;
+    public static final double kLeftShooterKv = 0.12363;
+    public static final double kLeftShooterKa = 0.0054807;
+    public static final double kLeftShooterKp = 0.000000073906; // Spark Max
+
+    public static final double kRightShooterKs = 0.05374;
+    public static final double kRightShooterKv = 0.12454;
+    public static final double kRightShooterKa = 0.0067951;
+    public static final double kRightShooterKp = 0.0000003893;  // Spark Max
+
+
+
+
+
+
+
+
+
     public static final int kKickInPort = 41;
 
     public static final int kPlateDownChannel = 2;

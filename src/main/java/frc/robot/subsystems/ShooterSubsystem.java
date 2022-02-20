@@ -4,12 +4,21 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.Shoot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -20,6 +29,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class ShooterSubsystem extends SubsystemBase implements Loggable{
   private final CANSparkMax m_leftShooter = new CANSparkMax(ShooterConstants.kLeftShooterPort, MotorType.kBrushless);
   private final CANSparkMax m_rightShooter = new CANSparkMax(ShooterConstants.kRightShooterPort, MotorType.kBrushless);
+
+  private final SimpleMotorFeedforward m_leftFF = new SimpleMotorFeedforward(ShooterConstants.kLeftShooterKs, ShooterConstants.kLeftShooterKv, ShooterConstants.kLeftShooterKa);
+  private final SimpleMotorFeedforward m_rightFF = new SimpleMotorFeedforward(ShooterConstants.kRightShooterKs, ShooterConstants.kRightShooterKv, ShooterConstants.kRightShooterKa);
+  private final SparkMaxPIDController m_pidLeftController, m_pidRightController;
+  private RelativeEncoder m_leftEncoder, m_rightEncoder;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+
   private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
   private final DoubleSolenoid m_plate = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, ShooterConstants.kPlateUpChannel, ShooterConstants.kPlateDownChannel);
   private final DoubleSolenoid m_tilt = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, ShooterConstants.kTiltExtendChannel, ShooterConstants.kTiltRetractChannel);
@@ -32,6 +48,10 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
     m_kickIn.restoreFactoryDefaults();
     m_plate.set(Value.kReverse);
     m_tilt.set(Value.kReverse);
+
+    m_pidLeftController = m_leftShooter.getPIDController();
+    m_pidRightController = m_rightShooter.getPIDController();
+    
 
     m_rightShooter.setIdleMode(IdleMode.kCoast);
     m_leftShooter.setIdleMode(IdleMode.kCoast);
@@ -108,4 +128,16 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  @Config(name = "Shooter Speed",tabName = "Live", defaultValueNumeric = 2000)
+  public void setShooterSpeed(double rpm){
+    m_pidLeftController.setReference(rpm, ControlType.kVelocity, 0, m_leftFF.calculate(rpm));
+    m_pidRightController.setReference(rpm, ControlType.kVelocity, 0, m_leftFF.calculate(rpm));
+  }
+
+  public void at() {
+    m_pidLeftController.
+  }
+
+
 }
