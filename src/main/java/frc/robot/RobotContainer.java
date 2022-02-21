@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.time.Instant;
+
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
@@ -54,7 +56,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
-    autoChooser.addOption("Pickup One Cargo", new FourBallSeries(m_drive));
+    autoChooser.addOption("Four Ball Series", new FourBallSeries(m_drive));
     autoChooser.addOption("WIP Shoot 4", new FourBallAuto(m_drive, m_shooter, m_intake));
     
     Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
@@ -113,12 +115,13 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
-    new POVButton(m_driverController, 0)
-        .whenPressed(new InstantCommand(()->m_led.setRed()));
-    new POVButton(m_driverController, 90)
-        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
-    new POVButton(m_driverController, 180)
-        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+
+    new POVButton(m_driverController, 0).whenPressed(()->m_led.setRed());
+    new POVButton(m_driverController, 90).whenPressed(()->m_led.setColor(197, 179, 88));
+    new POVButton(m_driverController, 180).whenPressed(()->m_led.setColor(0, 0, 255));
+
+    new JoystickButton(m_operatorController, XboxController.Button.kStart.value)
+        .whenPressed(new RunCommand(()->m_shooter.startShooter()).withTimeout(20));
   }
 
   /**
