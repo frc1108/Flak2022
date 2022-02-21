@@ -48,25 +48,22 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMain,m_rightMain);
 
   // Wheel velocity PID control for robot
-  private final PIDController m_leftPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
-  private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
+  private final PIDController m_forwardPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
+  private final PIDController m_turnPID = new PIDController(DriveConstants.kPTurn, 0, 0);
+/*   private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
   private final SimpleMotorFeedforward m_leftfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
   private final SimpleMotorFeedforward m_rightfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
+ */
 
   public final double m_slewSpeed = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;  // in units/s
   public final double m_slewTurn = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;
   private final SlewRateLimiter m_speedSlew = new SlewRateLimiter(m_slewSpeed);
   private final SlewRateLimiter m_turnSlew = new SlewRateLimiter(m_slewTurn);
 
-  private final RelativeEncoder m_leftEncoder;
-  private final RelativeEncoder m_rightEncoder;
+  private final RelativeEncoder m_leftEncoder, m_rightEncoder;
   private final DifferentialDriveOdometry m_odometry;
-  // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
-  // private final AnalogInput m_ultrasonic = new AnalogInput(DriveConstants.kUltrasonicPort);
-
-  
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
@@ -91,10 +88,10 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightFollow.setIdleMode(IdleMode.kBrake);
     
     // Set Smart Current Limit for CAN SparkMax
-    m_leftMain.setSmartCurrentLimit(40, 60);
-    m_leftFollow.setSmartCurrentLimit(40, 60);
-    m_rightMain.setSmartCurrentLimit(40, 60);
-    m_rightFollow.setSmartCurrentLimit(40, 60);
+    m_leftMain.setSmartCurrentLimit(60, 55);
+    m_leftFollow.setSmartCurrentLimit(60, 55);
+    m_rightMain.setSmartCurrentLimit(60, 55);
+    m_rightFollow.setSmartCurrentLimit(60, 55);
 
     // Setup NEO internal encoder to return SI units for odometry
     m_leftEncoder = m_leftMain.getEncoder();
@@ -169,13 +166,13 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_drive.feed();
 }
 
-public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double rightVelocitySetpoint) {
+/* public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double rightVelocitySetpoint) {
     m_leftMain.setVoltage(m_leftfeedforward.calculate(leftVelocitySetpoint)
         + m_leftPID.calculate(m_leftEncoder.getVelocity(), leftVelocitySetpoint));
     m_rightMain.setVoltage(m_rightfeedforward.calculate(rightVelocitySetpoint)
         + m_rightPID.calculate(m_rightEncoder.getVelocity(), rightVelocitySetpoint));
   m_drive.feed();
-}
+} */
   
   /***** Gyro methods
    * zeroHeading: sets gyro to zero

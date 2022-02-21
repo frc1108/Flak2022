@@ -44,6 +44,7 @@ public final class Constants {
     public static final double kvVoltSecondsPerMeter = 2.3243;  //2.24
     public static final double kaVoltSecondsSquaredPerMeter = 0.39228;  //0.0435
     public static final double kPDriveVel = 2.5205;  //2.4 8/14 2.24 Tuning to get better PIDF response
+    public static final double kPTurn = 0;
 
     // Log of sysID values
     // Feb12 Drivebase Ks = 0.17387 Kv = 2.3243 Ka = 0.39228 Kp = 2.5205
@@ -104,4 +105,11 @@ public final class Constants {
     public static final int kLEDPort = 9;
     public static final int kLEDLength = 150;
   }
+  public static final class VisionConstants {
+    public static final double kTargetHeight = Units.inchesToMeters(104);
+    public static final double kReflectiveCameraHeight = Units.inchesToMeters(34);
+    public static final double kReflectiveCameraPitch = Units.degreesToRadians(54);
+  }
+
+
 }
