@@ -17,6 +17,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Shoot;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -34,7 +35,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
   private final SimpleMotorFeedforward m_rightFF = new SimpleMotorFeedforward(ShooterConstants.kRightShooterKs, ShooterConstants.kRightShooterKv, ShooterConstants.kRightShooterKa);
   private final SparkMaxPIDController m_pidLeftController, m_pidRightController;
   private RelativeEncoder m_leftEncoder, m_rightEncoder;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, m_shooterSetpoint;
 
   private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
   private final DoubleSolenoid m_plate = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, ShooterConstants.kPlateUpChannel, ShooterConstants.kPlateDownChannel);
@@ -51,7 +52,10 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
     m_pidLeftController = m_leftShooter.getPIDController();
     m_pidRightController = m_rightShooter.getPIDController();
-    
+    m_pidLeftController.setP(ShooterConstants.kLeftShooterKp);    
+    m_pidRightController.setP(ShooterConstants.kRightShooterKp); 
+    m_leftEncoder = m_leftShooter.getEncoder();
+    m_rightEncoder = m_rightShooter.getEncoder(); 
 
     m_rightShooter.setIdleMode(IdleMode.kCoast);
     m_leftShooter.setIdleMode(IdleMode.kCoast);
@@ -63,8 +67,8 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
     //m_rightShooter.follow(m_leftShooter, true);
     m_rightShooter.setInverted(true);
 
-    m_rightShooter.setSmartCurrentLimit(40, 60);
-    m_leftShooter.setSmartCurrentLimit(40, 60);
+    m_rightShooter.setSmartCurrentLimit(40, 40);
+    m_leftShooter.setSmartCurrentLimit(40, 40);
 
     m_rightShooter.burnFlash();
     m_leftShooter.burnFlash();
@@ -126,17 +130,43 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
   
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
   }
 
-  @Config(name = "Shooter Speed",tabName = "Live", defaultValueNumeric = 2000)
-  public void setShooterSpeed(double rpm){
-    m_pidLeftController.setReference(rpm, ControlType.kVelocity, 0, m_leftFF.calculate(rpm));
-    m_pidRightController.setReference(rpm, ControlType.kVelocity, 0, m_leftFF.calculate(rpm));
+  @Config.NumberSlider(name = "Shooter Setpoint",
+                       tabName = "Live",
+                       defaultValue = 2000,
+                       min = 0,
+                       max = 4000,
+                       blockIncrement = 100)
+  public void setShooterSetpoint(double rpm) {
+    m_shooterSetpoint = rpm/60; // Constant in rot/s, this allows rpm w/ max ~5800 for NEO 1:1
   }
 
-  public void at() {
-    m_pidLeftController.
+  public void startShooter(){
+    m_pidLeftController.setReference(
+      m_shooterSetpoint, ControlType.kVelocity, 0, m_leftFF.calculate(m_shooterSetpoint));
+    m_pidRightController.setReference(
+      m_shooterSetpoint, ControlType.kVelocity, 0, m_rightFF.calculate(m_shooterSetpoint));
+  }
+
+  public double getSetpoint(){
+    return m_shooterSetpoint;
+  }
+
+  @Log(name = "Left Shooter Speed",tabName = "Live")
+  public double getLeftShooterRPM(){
+     return m_leftEncoder.getVelocity();
+  }
+
+  @Log(name = "Right Shooter Speed",tabName = "Live")
+  public double getRightShooterRPM(){
+    return m_rightEncoder.getVelocity();
+  }
+
+  @Log
+  public boolean atSpeed(double speed,double tol) {
+    return Math.abs(m_leftEncoder.getVelocity() - m_shooterSetpoint) < tol
+        && Math.abs(m_rightEncoder.getVelocity() - m_shooterSetpoint) < tol;
   }
 
 
