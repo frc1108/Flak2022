@@ -116,7 +116,7 @@ public class RobotContainer {
     new POVButton(m_driverController, 0)
         .whenPressed(new InstantCommand(()->m_led.setRed()));
     new POVButton(m_driverController, 90)
-        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
+        .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
   }

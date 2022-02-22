@@ -25,6 +25,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.pantherlib.Trajectory6391;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -64,9 +65,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
-  // private final AnalogInput m_ultrasonic = new AnalogInput(DriveConstants.kUltrasonicPort);
 
-  
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
@@ -297,4 +296,6 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
       var config = new TrajectoryConfig(1, 3);
       return generateTrajectory(filename, config);
   }
+
+  
 }
