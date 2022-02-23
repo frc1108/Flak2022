@@ -65,7 +65,7 @@ public class RobotContainer {
             () -> m_drive.arcadeDrive(
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
-            m_drive));
+            m_drive).withName("Drive Manual"));
     m_intake.setDefaultCommand(
         new RunCommand(
             () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
@@ -119,6 +119,8 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+    new JoystickButton(m_operatorController, XboxController.Button.kStart.value)
+        .whenPressed(new RunCommand(m_drive::turnToTarget,m_drive).withName("target").withInterrupt(m_drive::atTarget).withTimeout(5));
   }
 
   /**
