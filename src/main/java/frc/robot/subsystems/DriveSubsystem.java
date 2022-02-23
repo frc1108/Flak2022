@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +24,10 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.pantherlib.Trajectory6391;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -38,6 +41,9 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 
 public class DriveSubsystem extends SubsystemBase implements Loggable {
@@ -64,6 +70,11 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final DifferentialDriveOdometry m_odometry;
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
+  private final PhotonCamera m_reflectiveCamera = new PhotonCamera("SnakeIR");
+  private PhotonPipelineResult m_visionResult;
+  private final double forwardSpeed = 0;
+  private final double rotationSpeed = 0;
+  
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
@@ -108,6 +119,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightFollow.burnFlash();
 
     // Set drive deadband and safety 
+    
     m_drive.setDeadband(0.05);
     m_drive.setSafetyEnabled(true);
 
@@ -123,7 +135,8 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
+    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());
+    m_visionResult = m_reflectiveCamera.getLatestResult();
   }
 
   /***** Drivetrain methods
@@ -293,5 +306,46 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);
       return generateTrajectory(filename, config);
+  }
+
+  public void turnToTarget() {
+
+    if (result.hasTargets()) {
+      double range = PhotonUtils.calculateDistanceToTargetMeters(
+                                   VisionConstants.kReflectiveCameraHeight,
+                                   VisionConstants.kTargetHeight, 
+                                   VisionConstants.kReflectiveCameraPitch, 
+                                   Units.degreesToRadians(result.getBestTarget().getPitch()));
+
+      this.arcadeDrive(m_forwardPID.calculate(range, VisionConstants.kTargetDistanceMeters),
+                       -m_turnPID.calculate(result.getBestTarget().getYaw(), 0));                              
+    }
+  }
+
+  @Log
+  public double distanceToTargetMeters() {
+    if (m_visionResult.hasTargets()) {
+      return PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.kReflectiveCameraHeight,
+                         VisionConstants.kTargetHeight, VisionConstants.kReflectiveCameraPitch, 
+                         Units.degreesToRadians(m_visionResult.getBestTarget().getPitch()));
+    } else {
+      return VisionConstants.kTargetDistanceMeters;
+    }
+  }
+
+  @Log
+  public double rotationToTargetRadians() {
+    if (m_visionResult.hasTargets()) {
+      return PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.kReflectiveCameraHeight,
+                         VisionConstants.kTargetHeight, VisionConstants.kReflectiveCameraPitch, 
+                         Units.degreesToRadians(m_visionResult.getBestTarget().getPitch()));
+    } else {
+      return 0;
+    }
+  }
+
+  @Log
+  public boolean atTarget() {
+    return m_forwardPID.atSetpoint() && m_turnPID.atSetpoint();
   }
 }
