@@ -33,9 +33,10 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
   private final SimpleMotorFeedforward m_leftFF = new SimpleMotorFeedforward(ShooterConstants.kLeftShooterKs, ShooterConstants.kLeftShooterKv, ShooterConstants.kLeftShooterKa);
   private final SimpleMotorFeedforward m_rightFF = new SimpleMotorFeedforward(ShooterConstants.kRightShooterKs, ShooterConstants.kRightShooterKv, ShooterConstants.kRightShooterKa);
-  private final SparkMaxPIDController m_pidLeftController, m_pidRightController;
+  public final SparkMaxPIDController m_pidLeftController, m_pidRightController;
   private RelativeEncoder m_leftEncoder, m_rightEncoder;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, m_shooterSetpoint;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, m_shooterSetpoint, m_shooterTolerance;
+
 
   private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
   private final DoubleSolenoid m_plate = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, ShooterConstants.kPlateUpChannel, ShooterConstants.kPlateDownChannel);
@@ -134,7 +135,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
   @Config.NumberSlider(name = "Shooter Setpoint",
                        tabName = "Live",
-                       defaultValue = 2000,
+                       defaultValue = 1750,
                        min = 0,
                        max = 4000,
                        blockIncrement = 100)
@@ -164,10 +165,26 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
   }
 
   @Log
-  public boolean atSpeed(double speed,double tol) {
-    return Math.abs(m_leftEncoder.getVelocity() - m_shooterSetpoint) < tol
-        && Math.abs(m_rightEncoder.getVelocity() - m_shooterSetpoint) < tol;
+  public boolean atSpeed() {
+    return Math.abs(m_leftEncoder.getVelocity() - m_shooterSetpoint) < m_shooterTolerance
+        && Math.abs(m_rightEncoder.getVelocity() - m_shooterSetpoint) < m_shooterTolerance
+        && Math.abs(m_leftEncoder.getVelocity()) > 0;
   }
 
+  @Config.NumberSlider(name = "Shooter Tolerance rpm",tabName = "Live",defaultValue = 100)
+  public void setShooterTolerance(double tol) {
+    m_shooterTolerance = tol;
+  }
 
+  public void increaseSetpoint(){
+    m_shooterSetpoint += 50;
+  }
+
+  public void decreaseSetpoint(){
+    m_shooterSetpoint += 50;
+  }
+
+  public void resetSetpoint(){
+    m_shooterSetpoint = 1750;
+  }
 }
