@@ -14,8 +14,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,10 +22,8 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.pantherlib.Trajectory6391;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -41,11 +37,6 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-
-
 public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_leftMain = new CANSparkMax(DriveConstants.kLeftMainPort, MotorType.kBrushless);
   private final CANSparkMax m_leftFollow = new CANSparkMax(DriveConstants.kLeftFollowPort, MotorType.kBrushless);
@@ -54,8 +45,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMain,m_rightMain);
 
   // Wheel velocity PID control for robot
-  private final PIDController m_forwardPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
-  private final PIDController m_turnPID = new PIDController(DriveConstants.kPTurn, 0, 0);
+
 /*   private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
   private final SimpleMotorFeedforward m_leftfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
   private final SimpleMotorFeedforward m_rightfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
@@ -70,11 +60,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final DifferentialDriveOdometry m_odometry;
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
-  private final PhotonCamera m_reflectiveCamera = new PhotonCamera("SnakeIR");
-  private PhotonPipelineResult m_visionResult;
-  private final double forwardSpeed = 0;
-  private final double rotationSpeed = 0;
-  
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
@@ -99,6 +84,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightFollow.setIdleMode(IdleMode.kBrake);
     
     // Set Smart Current Limit for CAN SparkMax
+    // Higher Limit at Stall than at Free Speed
     m_leftMain.setSmartCurrentLimit(60, 55);
     m_leftFollow.setSmartCurrentLimit(60, 55);
     m_rightMain.setSmartCurrentLimit(60, 55);
@@ -119,7 +105,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightFollow.burnFlash();
 
     // Set drive deadband and safety 
-    
     m_drive.setDeadband(0.05);
     m_drive.setSafetyEnabled(true);
 
@@ -136,7 +121,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
     SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());
-    m_visionResult = m_reflectiveCamera.getLatestResult();
   }
 
   /***** Drivetrain methods
@@ -256,11 +240,8 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
 
   /***** Trajectory methods - make paths for robot to follow 
    * createCommandForTrajectory:
-   * loadTrajectory:
    * generateTrajectory:
-   * loadTrajectoryFromFile:
    * generateTrajectoryFromFile:
-   * TODO explain these methods
    */
 
   public Command createCommandForTrajectory(Trajectory trajectory, Boolean initPose) {
@@ -280,11 +261,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
-/*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
-    return TrajectoryUtil.fromPathweaverJson(
-        Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
-  } */
-
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
       var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("waypoints", trajectoryName));
@@ -294,58 +270,9 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
       return new Trajectory();
     }
   }
-/*   public Trajectory loadTrajectoryFromFile(String filename) {
-    try {
-      return loadTrajectory(filename);
-    } catch (IOException e) {
-      DriverStation.reportError("Failed to load auto trajectory: " + filename, false);
-      return new Trajectory();
-    }
-  } */
 
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);
       return generateTrajectory(filename, config);
-  }
-
-  public void turnToTarget() {
-
-    if (result.hasTargets()) {
-      double range = PhotonUtils.calculateDistanceToTargetMeters(
-                                   VisionConstants.kReflectiveCameraHeight,
-                                   VisionConstants.kTargetHeight, 
-                                   VisionConstants.kReflectiveCameraPitch, 
-                                   Units.degreesToRadians(result.getBestTarget().getPitch()));
-
-      this.arcadeDrive(m_forwardPID.calculate(range, VisionConstants.kTargetDistanceMeters),
-                       -m_turnPID.calculate(result.getBestTarget().getYaw(), 0));                              
-    }
-  }
-
-  @Log
-  public double distanceToTargetMeters() {
-    if (m_visionResult.hasTargets()) {
-      return PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.kReflectiveCameraHeight,
-                         VisionConstants.kTargetHeight, VisionConstants.kReflectiveCameraPitch, 
-                         Units.degreesToRadians(m_visionResult.getBestTarget().getPitch()));
-    } else {
-      return VisionConstants.kTargetDistanceMeters;
-    }
-  }
-
-  @Log
-  public double rotationToTargetRadians() {
-    if (m_visionResult.hasTargets()) {
-      return PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.kReflectiveCameraHeight,
-                         VisionConstants.kTargetHeight, VisionConstants.kReflectiveCameraPitch, 
-                         Units.degreesToRadians(m_visionResult.getBestTarget().getPitch()));
-    } else {
-      return 0;
-    }
-  }
-
-  @Log
-  public boolean atTarget() {
-    return m_forwardPID.atSetpoint() && m_turnPID.atSetpoint();
   }
 }
