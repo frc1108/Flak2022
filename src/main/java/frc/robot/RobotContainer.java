@@ -10,22 +10,25 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
-import frc.robot.commands.Cycling;
-import frc.robot.commands.FlipPlate;
 import frc.robot.commands.Shoot;
-import frc.robot.commands.auto.PickupOne;
+import frc.robot.commands.ShootOnce;
+import frc.robot.commands.auto.FourBallAuto;
+import frc.robot.commands.auto.FourBallSeries;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,9 +38,9 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_drive = new DriveSubsystem();
-  private final ShooterSubsystem m_shooter = new ShooterSubsystem();
-  private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  @Log private final DriveSubsystem m_drive = new DriveSubsystem();
+  @Log final ShooterSubsystem m_shooter = new ShooterSubsystem();
+  @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final LEDSubsystem m_led = new LEDSubsystem();
   
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -51,7 +54,13 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    autoChooser.setDefaultOption("Pickup One Cargo", new PickupOne(m_drive));
+    autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
+    autoChooser.addOption("Pickup One Cargo", new FourBallSeries(m_drive));
+    autoChooser.addOption("WIP Shoot 4", new FourBallAuto(m_drive, m_shooter, m_intake));
+    
+    Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
+
+
     m_drive.setDefaultCommand(
         new RunCommand(
             () -> m_drive.arcadeDrive(
@@ -74,9 +83,9 @@ public class RobotContainer {
     //testing kick and shoot code
 
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(35), ()->m_shooter.stopShoot()));
+        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 41, 8));
+        .whenPressed(new Shoot(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -103,12 +112,14 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
     new POVButton(m_operatorController, 180)
         .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
+    new POVButton(m_operatorController, 90)
+        .whenPressed(new ShootOnce(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
     new POVButton(m_driverController, 0)
         .whenPressed(new InstantCommand(()->m_led.setRed()));
     new POVButton(m_driverController, 90)
-        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
+        .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
   }
@@ -120,7 +131,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return autoChooser.getSelected();
   }
 
   public void reset(){

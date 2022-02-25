@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.pantherlib.Trajectory6391;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -39,7 +41,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 
 
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_leftMain = new CANSparkMax(DriveConstants.kLeftMainPort, MotorType.kBrushless);
   private final CANSparkMax m_leftFollow = new CANSparkMax(DriveConstants.kLeftFollowPort, MotorType.kBrushless);
   private final CANSparkMax m_rightMain = new CANSparkMax(DriveConstants.kRightMainPort, MotorType.kBrushless);
@@ -63,9 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
   // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
-  // private final AnalogInput m_ultrasonic = new AnalogInput(DriveConstants.kUltrasonicPort);
 
-  
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
     // Stops drive motors
@@ -122,10 +122,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), -m_rightEncoder.getPosition());
+    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Dist", -m_rightEncoder.getPosition());  
+    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
   }
 
   /***** Drivetrain methods
@@ -164,7 +164,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     m_leftMain.setVoltage(leftVolts);
-    m_rightMain.setVoltage(-rightVolts);
+    m_rightMain.setVoltage(rightVolts);
     m_drive.feed();
 }
 
@@ -172,7 +172,7 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
     m_leftMain.setVoltage(m_leftfeedforward.calculate(leftVelocitySetpoint)
         + m_leftPID.calculate(m_leftEncoder.getVelocity(), leftVelocitySetpoint));
     m_rightMain.setVoltage(m_rightfeedforward.calculate(rightVelocitySetpoint)
-        + m_rightPID.calculate(-m_rightEncoder.getVelocity(), rightVelocitySetpoint));
+        + m_rightPID.calculate(m_rightEncoder.getVelocity(), rightVelocitySetpoint));
   m_drive.feed();
 }
   
@@ -240,7 +240,7 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(),-m_rightEncoder.getVelocity());
+    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(),m_rightEncoder.getVelocity());
   } 
 
   /***** Trajectory methods - make paths for robot to follow 
@@ -269,10 +269,10 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
-  protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
+/*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
     return TrajectoryUtil.fromPathweaverJson(
         Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
-  }
+  } */
 
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
@@ -283,17 +283,19 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
       return new Trajectory();
     }
   }
-  public Trajectory loadTrajectoryFromFile(String filename) {
+/*   public Trajectory loadTrajectoryFromFile(String filename) {
     try {
       return loadTrajectory(filename);
     } catch (IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + filename, false);
       return new Trajectory();
     }
-  }
+  } */
 
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);
       return generateTrajectory(filename, config);
   }
+
+  
 }

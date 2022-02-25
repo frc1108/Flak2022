@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.robot.Constants.ShooterConstants;
+import io.github.oblarg.oblog.Loggable;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -16,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase implements Loggable{
   private final CANSparkMax m_leftShooter = new CANSparkMax(ShooterConstants.kLeftShooterPort, MotorType.kBrushless);
   private final CANSparkMax m_rightShooter = new CANSparkMax(ShooterConstants.kRightShooterPort, MotorType.kBrushless);
   private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
@@ -49,6 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftShooter.burnFlash();
     m_kickIn.burnFlash();
 
+    
     this.setDefaultCommand(new RunCommand(() -> stopAll(), this));
   }
 
@@ -64,6 +66,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void toggleTilt() {
     m_tilt.toggle();
+  }
+  public void tiltUp() {
+    m_tilt.set(Value.kForward);
+  }
+  public void tiltDown() {
+    m_tilt.set(Value.kReverse);
   }
 
   public void stopAll() {

@@ -10,11 +10,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import frc.robot.Constants.IntakeConstants;
+import io.github.oblarg.oblog.Loggable;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_intake = new CANSparkMax(IntakeConstants.kIntakePort, MotorType.kBrushless);
   private final DoubleSolenoid m_intakeExtender = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, IntakeConstants.kIntakeExtendChannel, IntakeConstants.kIntakeRetractChannel);
   /** Creates a new IntakeSubsystem. */
@@ -35,6 +36,12 @@ public class IntakeSubsystem extends SubsystemBase {
   
   public void toggleExtension() {
     m_intakeExtender.toggle();
+  }
+  public void extend() {
+    m_intakeExtender.set(Value.kForward);
+  }
+  public void retract() {
+    m_intakeExtender.set(Value.kReverse);
   }
 
   public void stopIntake() {
