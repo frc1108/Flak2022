@@ -50,6 +50,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
     m_leftShooter.burnFlash();
     m_kickIn.burnFlash();
 
+    
     this.setDefaultCommand(new RunCommand(() -> stopAll(), this));
   }
 
@@ -65,6 +66,12 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
   public void toggleTilt() {
     m_tilt.toggle();
+  }
+  public void tiltUp() {
+    m_tilt.set(Value.kForward);
+  }
+  public void tiltDown() {
+    m_tilt.set(Value.kReverse);
   }
 
   public void stopAll() {

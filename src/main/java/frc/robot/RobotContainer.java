@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallAuto;
 import frc.robot.commands.auto.FourBallSeries;
 import frc.robot.subsystems.DriveSubsystem;
@@ -84,7 +85,7 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 8));
+        .whenPressed(new Shoot(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -111,6 +112,8 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
     new POVButton(m_operatorController, 180)
         .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
+    new POVButton(m_operatorController, 90)
+        .whenPressed(new ShootOnce(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
     new POVButton(m_driverController, 0)
