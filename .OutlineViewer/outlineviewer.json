@@ -1,0 +1,12 @@
+{
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "1108"
+  },
+  "photonvision": {
+    "open": true,
+    "reflectiveCamera": {
+      "open": true
+    }
+  }
+}
