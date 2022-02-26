@@ -18,8 +18,7 @@ import frc.robot.Constants.*;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallAuto;
-import frc.robot.commands.auto.FourBallAutoShort;
-import frc.robot.commands.auto.FourBallSeries;
+import frc.robot.commands.auto.TwoBallAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import io.github.oblarg.oblog.annotations.Log;
@@ -56,9 +55,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
-    autoChooser.addOption("Pickup One Cargo", new FourBallSeries(m_drive));
-    autoChooser.addOption("WIP Shoot 4", new FourBallAuto(m_drive, m_shooter, m_intake));
-    autoChooser.addOption("WIP Shoot 4 Condensed", new FourBallAutoShort(m_drive, m_shooter, m_intake));
+    autoChooser.addOption("..2 Ball Auto", new TwoBallAuto(m_drive, m_shooter, m_intake));
+    autoChooser.addOption("4 Ball Auto", new FourBallAuto(m_drive, m_shooter, m_intake));
     
     Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
 

@@ -21,11 +21,12 @@ public class Shoot extends ParallelRaceGroup {
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new WaitCommand(0.55),
+                new TimedKick(m_shooter, 0.1, -0.5),
+                new WaitCommand(0.45),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
                 new TimedKick(m_shooter, kickTime),
-                new WaitCommand(0.1),
+                new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
             new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent))
@@ -39,11 +40,12 @@ public class Shoot extends ParallelRaceGroup {
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new WaitCommand(0.55),
+                new TimedKick(m_shooter, 0.1, -0.5),
+                new WaitCommand(0.45),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
                 new TimedKick(m_shooter, kickTime),
-                new WaitCommand(0.1),
+                new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
             new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerModifierPercent))
@@ -58,11 +60,12 @@ public class Shoot extends ParallelRaceGroup {
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new WaitCommand(0.55),
+                new TimedKick(m_shooter, 0.1, -0.5),
+                new WaitCommand(0.45),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
                 new TimedKick(m_shooter, adjustedKickTime),
-                new WaitCommand(0.1),
+                new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
             new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerModifierPercent))

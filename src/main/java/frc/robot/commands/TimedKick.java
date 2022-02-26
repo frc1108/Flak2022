@@ -16,4 +16,14 @@ public class TimedKick extends SequentialCommandGroup{
             })
         );
     }
+    public TimedKick(ShooterSubsystem m_shooter, double seconds, double multiplier) {
+        addCommands(
+            new RunCommand(() -> {
+                m_shooter.kick(50*multiplier);
+            }).withTimeout(seconds),
+            new InstantCommand(() -> {
+                m_shooter.stopKick();
+            })
+        );
+    }
 }
