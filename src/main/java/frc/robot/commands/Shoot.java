@@ -14,17 +14,17 @@ public class Shoot extends ParallelRaceGroup {
    * @param m_shooter the subsystem obviously
    * @param powerModifierPercent the additional percent to add or subtract to the shooter
    */
-
+    private double kickTime = 2;
     public Shoot(ShooterSubsystem m_shooter) {
         addCommands(
             sequence(
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new WaitCommand(0.75),
+                new WaitCommand(0.55),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
-                new TimedKick(m_shooter, 2),
+                new TimedKick(m_shooter, kickTime),
                 new WaitCommand(0.1),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
@@ -39,10 +39,29 @@ public class Shoot extends ParallelRaceGroup {
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new WaitCommand(0.75),
+                new WaitCommand(0.55),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
-                new TimedKick(m_shooter, 2),
+                new TimedKick(m_shooter, kickTime),
+                new WaitCommand(0.1),
+                new FlipPlate(m_shooter)),
+            //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
+            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerModifierPercent))
+            .andThen(new InstantCommand(()->m_shooter.stopShoot()))
+            );
+        addRequirements(m_shooter);
+    }
+    public Shoot(ShooterSubsystem m_shooter, double powerModifierPercent, boolean abbreviatedKick) {
+        double adjustedKickTime = abbreviatedKick ? 0.75 : 2;
+        addCommands(
+            sequence(
+                new InstantCommand(() -> {
+                m_shooter.plateDown();
+                }),
+                new WaitCommand(0.55),
+                new FlipPlate(m_shooter),
+                new WaitCommand(0.1),
+                new TimedKick(m_shooter, adjustedKickTime),
                 new WaitCommand(0.1),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/

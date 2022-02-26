@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.Shoot;
-import frc.robot.commands.ShootOnce;
 import frc.robot.commands.TimedIntake;
 import frc.robot.commands.TimedKick;
 import frc.robot.subsystems.DriveSubsystem;
@@ -15,8 +14,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class FourBallAutoShort extends SequentialCommandGroup {
   public FourBallAutoShort(DriveSubsystem m_robotDrive, ShooterSubsystem m_shooter, IntakeSubsystem m_intake) {        
-      TrajectoryConfig fwdConfig = new TrajectoryConfig(2.5, 3);
-      TrajectoryConfig revConfig = new TrajectoryConfig(2.5, 3).setReversed(true);
+      TrajectoryConfig fwdConfig = new TrajectoryConfig(2.7, 3);
+      TrajectoryConfig revConfig = new TrajectoryConfig(2.7, 3).setReversed(true);
       
       Trajectory trajToCargo = m_robotDrive.generateTrajectory("Cargo1", fwdConfig);
       Trajectory reverseTurn = m_robotDrive.generateTrajectory("Cargo2", revConfig);
@@ -30,26 +29,29 @@ public class FourBallAutoShort extends SequentialCommandGroup {
           parallel(
             m_robotDrive.createCommandForTrajectory(trajToCargo, false).withTimeout(5).withName("Cargo One Pickup"),
             new InstantCommand(()->m_intake.extend()),
-            new TimedIntake(m_intake, 3),
-            new TimedKick(m_shooter, 3)),
+            new TimedIntake(m_intake, 2.8),
+            new TimedKick(m_shooter, 2.8)),
           new InstantCommand(()->m_shooter.tiltUp()),
-          new TimedKick(m_shooter, 1),
-          new Shoot(m_shooter, 2.25),
+          //new TimedKick(m_shooter, 1),
+          new Shoot(m_shooter, 2.05, true),
           parallel(
             new InstantCommand(()->m_shooter.tiltDown()),
             m_robotDrive.createCommandForTrajectory(reverseTurn, false).withTimeout(5).withName("Reverse Turn")),
           deadline(
-            m_robotDrive.createCommandForTrajectory(terminalRun, false).withTimeout(5).withName("Terminal Run").andThen(new WaitCommand(1)),
-            new TimedIntake(m_intake, 5),
-            new TimedKick(m_shooter, 5)),
-          parallel(
-            new InstantCommand(()->m_intake.stopIntake()),
-            new InstantCommand(()->m_shooter.stopKick())
-          ),
+            m_robotDrive.createCommandForTrajectory(terminalRun, false).withTimeout(5).withName("Terminal Run").andThen(new WaitCommand(0.15)),
+            new TimedIntake(m_intake,10), //this time is long enough that the stop command doesnt get scheduled because of the deadline group
+            new TimedKick(m_shooter, 10)), //this time is long enough that the stop command doesnt get scheduled because of the deadline group
           parallel(
             m_robotDrive.createCommandForTrajectory(returnToHub, false).withTimeout(5).withName("Return To Hub"),
-            new InstantCommand(()->m_shooter.tiltUp())),
-          new Shoot(m_shooter, 2.25),
+            sequence(
+              new InstantCommand(()->m_intake.retract()),
+              new WaitCommand(0.5),
+              new InstantCommand(()->m_intake.extend()),
+              new InstantCommand(()->m_shooter.tiltUp()),
+              new InstantCommand(()->m_intake.stopIntake()),
+              //new WaitCommand(1),
+              new InstantCommand(()->m_shooter.stopKick()))),
+          new Shoot(m_shooter, 2.05, true),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }
