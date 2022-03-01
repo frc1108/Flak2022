@@ -24,6 +24,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.pantherlib.Trajectory6391;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -120,7 +121,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());
+    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
   }
 
   /***** Drivetrain methods
@@ -261,6 +262,13 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
+
+/*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
+    return TrajectoryUtil.fromPathweaverJson(
+        Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
+  } */
+
+
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
       var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("waypoints", trajectoryName));
@@ -270,6 +278,15 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
       return new Trajectory();
     }
   }
+
+/*   public Trajectory loadTrajectoryFromFile(String filename) {
+    try {
+      return loadTrajectory(filename);
+    } catch (IOException e) {
+      DriverStation.reportError("Failed to load auto trajectory: " + filename, false);
+      return new Trajectory();
+    }
+  } */
 
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);

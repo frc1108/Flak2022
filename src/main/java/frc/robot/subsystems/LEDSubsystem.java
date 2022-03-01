@@ -20,7 +20,9 @@ public class LEDSubsystem extends SubsystemBase {
     m_led.setLength(m_buffer.getLength());
     m_led.setData(m_buffer);
     m_led.start();
-    setRed();
+    //setRed();
+    this.setColor(255, 100, 0);
+
   }
   public void setRed() {
     for (var i = 0; i < m_buffer.getLength(); i++) {

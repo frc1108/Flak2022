@@ -16,12 +16,13 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
 import frc.robot.commands.Shoot;
-import frc.robot.commands.auto.FourBallAuto;
-import frc.robot.commands.auto.FourBallSeries;
 import frc.robot.commands.shooter.AutoAim;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.commands.ShootOnce;
+import frc.robot.commands.auto.FourBallAuto;
+import frc.robot.commands.auto.TwoBallAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -44,6 +45,8 @@ public class RobotContainer {
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
   @Log private final LEDSubsystem m_led = new LEDSubsystem();
   @Log public final VisionSubsystem m_vision = new VisionSubsystem();
+
+
   
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -58,10 +61,10 @@ public class RobotContainer {
     configureButtonBindings();
 
     autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
-    autoChooser.addOption("Pickup One Cargo", new FourBallSeries(m_drive));
-    autoChooser.addOption("WIP Shoot 4", new FourBallAuto(m_drive, m_shooter, m_intake));
+    autoChooser.addOption("..2 Ball Auto", new TwoBallAuto(m_drive, m_shooter, m_intake));
+    autoChooser.addOption("4 Ball Auto", new FourBallAuto(m_drive, m_shooter, m_intake));
     
-    //Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
+    Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
 
 
     m_drive.setDefaultCommand(
@@ -88,7 +91,7 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 8));
+        .whenPressed(new Shoot(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -115,12 +118,14 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
     new POVButton(m_operatorController, 180)
         .whenPressed(new InstantCommand(()->m_shooter.plateDown()));
+    new POVButton(m_operatorController, 90)
+        .whenPressed(new ShootOnce(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
     new POVButton(m_driverController, 0)
         .whenPressed(new InstantCommand(()->m_led.setRed()));
     new POVButton(m_driverController, 90)
-        .whenPressed(new InstantCommand(()->m_led.setColor(197, 179, 88)));
+        .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
 

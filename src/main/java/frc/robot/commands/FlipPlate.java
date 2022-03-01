@@ -11,7 +11,7 @@ public class FlipPlate extends SequentialCommandGroup{
             new InstantCommand(() -> {
                 m_shooter.plateUp();
             }),
-            new WaitCommand(.25),
+            new WaitCommand(.15),
             new InstantCommand(() -> {
                 m_shooter.plateDown();
             })
