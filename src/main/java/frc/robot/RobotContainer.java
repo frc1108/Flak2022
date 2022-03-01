@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.*;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.shooter.AutoAim;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallAuto;
 import frc.robot.commands.auto.TwoBallAuto;
@@ -39,13 +41,17 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   @Log private final DriveSubsystem m_drive = new DriveSubsystem();
-  @Log final ShooterSubsystem m_shooter = new ShooterSubsystem();
+  @Log private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
-  private final LEDSubsystem m_led = new LEDSubsystem();
+  @Log private final LEDSubsystem m_led = new LEDSubsystem();
+  @Log public final VisionSubsystem m_vision = new VisionSubsystem();
+
+
   
-  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
+  @Log(name = "Auto Mode", tabName = "Live")
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
@@ -66,7 +72,7 @@ public class RobotContainer {
             () -> m_drive.arcadeDrive(
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
-            m_drive));
+            m_drive).withName("Drive Manual"));
     m_intake.setDefaultCommand(
         new RunCommand(
             () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
@@ -122,6 +128,12 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+
+    // While driver holds the A button Auto Aim to the High Hub and range to distance    
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .whileActiveOnce(new AutoAim(m_drive,m_vision,true,m_driverController));
+
+    // 
   }
 
   /**
