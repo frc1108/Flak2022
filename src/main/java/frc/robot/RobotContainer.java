@@ -64,9 +64,6 @@ public class RobotContainer {
     autoChooser.addOption("..2 Ball Auto", new TwoBallAuto(m_drive, m_shooter, m_intake));
     autoChooser.addOption("4 Ball Auto", new FourBallAuto(m_drive, m_shooter, m_intake));
     
-    Shuffleboard.getTab("Live").add("Auto Mode",autoChooser);
-
-
     m_drive.setDefaultCommand(
         new RunCommand(
             () -> m_drive.arcadeDrive(

@@ -15,7 +15,7 @@ import frc.robot.Constants.VisionConstants;
 
 public class VisionSubsystem extends SubsystemBase {
 
-  public PhotonCamera m_reflectiveCamera = new PhotonCamera("reflectiveCamera");
+  public PhotonCamera m_reflectiveCamera = new PhotonCamera("ircam");
   //public PhotonCamera m_cargoCamera = new PhotonCamera("pi zero")
 
   /** Creates a new VisionSubsystem. */
