@@ -14,10 +14,12 @@ import io.github.oblarg.oblog.Loggable;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.robot.pantherlib.PicoColorSensor;
 
 public class IntakeSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_intake = new CANSparkMax(IntakeConstants.kIntakePort, MotorType.kBrushless);
   private final DoubleSolenoid m_intakeExtender = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, IntakeConstants.kIntakeExtendChannel, IntakeConstants.kIntakeRetractChannel);
+
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
     stopIntake();

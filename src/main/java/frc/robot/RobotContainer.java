@@ -27,6 +27,7 @@ import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallAuto;
 import frc.robot.commands.auto.FourBallShort;
 import frc.robot.commands.auto.TwoBallAuto;
+import frc.robot.subsystems.ColorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import io.github.oblarg.oblog.annotations.Log;
@@ -51,6 +52,7 @@ public class RobotContainer {
   @Log final ShooterSubsystem m_shooter = new ShooterSubsystem();
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final LEDSubsystem m_led = new LEDSubsystem();
+  private final ColorSubsystem m_color = new ColorSubsystem();
   
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
