@@ -22,7 +22,7 @@ public class Shoot extends ParallelRaceGroup {
                 m_shooter.plateDown();
                 }),
                 new TimedKick(m_shooter, 0.1, -0.5),
-                new WaitCommand(0.45),
+                new WaitCommand(0.35),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
                 new TimedKick(m_shooter, kickTime),
@@ -54,7 +54,7 @@ public class Shoot extends ParallelRaceGroup {
         addRequirements(m_shooter);
     }
     public Shoot(ShooterSubsystem m_shooter, double powerModifierPercent, boolean abbreviatedKick) {
-        double adjustedKickTime = abbreviatedKick ? 0.75 : 2;
+        double adjustedKickTime = abbreviatedKick ? 0.83 : 2;
         addCommands(
             sequence(
                 new InstantCommand(() -> {

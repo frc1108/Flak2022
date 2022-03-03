@@ -13,6 +13,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class TwoBallAuto extends SequentialCommandGroup {
+  private double delay = 0;
   public TwoBallAuto(DriveSubsystem m_robotDrive, ShooterSubsystem m_shooter, IntakeSubsystem m_intake) {        
       TrajectoryConfig fwdConfig = new TrajectoryConfig(3, 3);
       TrajectoryConfig revConfig = new TrajectoryConfig(3, 3).setReversed(true);
@@ -21,6 +22,7 @@ public class TwoBallAuto extends SequentialCommandGroup {
       Trajectory backToTarmac = m_robotDrive.generateTrajectory("Two2", revConfig);
       
       addCommands(
+          new WaitCommand(delay),
           new InstantCommand(() -> {
               m_robotDrive.resetOdometry(toCargo.getInitialPose());
           }),
@@ -33,8 +35,34 @@ public class TwoBallAuto extends SequentialCommandGroup {
           m_robotDrive.createCommandForTrajectory(backToTarmac, false).withTimeout(5).withName("Back To Tarmac"),
           new WaitCommand(1), //not in four ball
           //new TimedKick(m_shooter, 1),
-          new Shoot(m_shooter, 2.05, false),
+          new Shoot(m_shooter, 1, false),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }
+  public TwoBallAuto(DriveSubsystem m_robotDrive, ShooterSubsystem m_shooter, IntakeSubsystem m_intake, double m_delay) {        
+    TrajectoryConfig fwdConfig = new TrajectoryConfig(3, 3);
+    TrajectoryConfig revConfig = new TrajectoryConfig(3, 3).setReversed(true);
+    
+    Trajectory toCargo = m_robotDrive.generateTrajectory("Two1", fwdConfig);
+    Trajectory backToTarmac = m_robotDrive.generateTrajectory("Two2", revConfig);
+    delay = m_delay;
+    
+    addCommands(
+      new WaitCommand(delay),
+        new InstantCommand(() -> {
+            m_robotDrive.resetOdometry(toCargo.getInitialPose());
+        }),
+        parallel(
+          m_robotDrive.createCommandForTrajectory(toCargo, false).withTimeout(5).withName("Cargo One Pickup"),
+          new InstantCommand(()->m_intake.extend()),
+          new TimedIntake(m_intake, 2.8),
+          new TimedKick(m_shooter, 2.8)),
+        new InstantCommand(()->m_shooter.tiltUp()),
+        m_robotDrive.createCommandForTrajectory(backToTarmac, false).withTimeout(5).withName("Back To Tarmac"),
+        new WaitCommand(1), //not in four ball
+        //new TimedKick(m_shooter, 1),
+        new Shoot(m_shooter, 1, false),
+        new InstantCommand(()->m_shooter.tiltDown())
+    );
+}
 }
