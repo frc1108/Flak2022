@@ -43,15 +43,15 @@ public class FourBallShort extends SequentialCommandGroup {
             m_robotDrive.createCommandForTrajectory(terminalRun, false).withTimeout(5).withName("Terminal Run").andThen(new WaitCommand(0.55)),
             new TimedKick(m_shooter,10), //this time is long enough that the stop command doesnt get scheduled because of the deadline group
             sequence(
-              new TimedIntake(m_intake, 0.3),
+              new TimedIntake(m_intake, 2),
                 new TimedIntake(m_intake, 0.075, -.25),
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25),
-                new TimedIntake(m_intake, 0.3),
+                new TimedIntake(m_intake, 10)/* ,
                 new TimedIntake(m_intake, 0.075, -.25),
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25),
-                new TimedIntake(m_intake, 10))), 
+                new TimedIntake(m_intake, 10) */)), 
           parallel(
             m_robotDrive.createCommandForTrajectory(returnToHub, false).withTimeout(5).withName("Return To Hub"),
             sequence(
