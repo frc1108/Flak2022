@@ -12,13 +12,16 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
@@ -53,6 +56,7 @@ public class RobotContainer {
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final LEDSubsystem m_led = new LEDSubsystem();
   private final ColorSubsystem m_color = new ColorSubsystem();
+  
   
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -144,6 +148,10 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+
+    
+    
+    new Trigger(m_color::getBlueFrontMatch).debounce(0.05).whenActive(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble, 0.5))); //.whenActive(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble)).withTimeout(1);
   }
 
   /**
