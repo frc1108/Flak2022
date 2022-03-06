@@ -26,6 +26,7 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallAuto;
 import frc.robot.commands.auto.FourBallShort;
+import frc.robot.commands.auto.OneBallAuto;
 import frc.robot.commands.auto.TwoBallAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -72,10 +73,8 @@ public class RobotContainer {
     //delayChooser.addOption("10", 10.0);
     autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
     autoChooser.addOption("2 Ball Auto", new TwoBallAuto(m_drive, m_shooter, m_intake));
-    //autoChooser.addOption("2WIp Ball Auto", new SequentialCommandGroup(new WaitCommand(5), new TwoBallAuto(m_drive, m_shooter, m_intake)));
-    autoChooser.addOption("4 Ball Auto", new FourBallAuto(m_drive, m_shooter, m_intake));
-    autoChooser.addOption("4 Ball Auto Shortened", new FourBallShort(m_drive, m_shooter, m_intake));
-    
+    autoChooser.addOption("4 Ball Auto", new FourBallShort(m_drive, m_shooter, m_intake));
+    autoChooser.addOption("1 Ball Auto", new OneBallAuto(m_drive, m_shooter, m_intake));
     Shuffleboard.getTab("Live").add("Auto Mode",autoChooser).withSize(2, 1);
     
     
