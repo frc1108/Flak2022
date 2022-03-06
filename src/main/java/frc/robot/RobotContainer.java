@@ -151,7 +151,7 @@ public class RobotContainer {
 
     
     
-    new Trigger(m_color::getBlueFrontMatch).debounce(0.05).whenActive(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble, 0.5))); //.whenActive(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble)).withTimeout(1);
+    new Trigger(m_color::getBlueFrontMatch).whileActiveContinuous(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble, 0.5))); 
   }
 
   /**
