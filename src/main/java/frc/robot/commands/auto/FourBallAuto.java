@@ -29,8 +29,8 @@ public class FourBallAuto extends SequentialCommandGroup {
           parallel(
             m_robotDrive.createCommandForTrajectory(trajToCargo, false).withTimeout(5).withName("Cargo One Pickup"),
             new InstantCommand(()->m_intake.extend()),
-            new TimedIntake(m_intake, 2.8),
-            new TimedKick(m_shooter, 2.8)),
+            new TimedIntake(m_intake, 2.7),
+            new TimedKick(m_shooter, 2.7)),
           new InstantCommand(()->m_shooter.tiltUp()),
           //new TimedKick(m_shooter, 1),
           new Shoot(m_shooter, 1.85, true),

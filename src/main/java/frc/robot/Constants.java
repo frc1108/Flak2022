@@ -71,7 +71,7 @@ public final class Constants {
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 40;
+    public static final double kShooterPercent = 38.5;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;
@@ -85,7 +85,7 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final int kIntakePort = 42;
     public static final int kIntakeVolts = 6;
-    public static final int kIntakeModifier = 12; //12 is the max
+    public static final double kIntakeModifier = 8.5; //12 is the max
 
     public static final int kIntakeExtendChannel = 5;
     public static final int kIntakeRetractChannel = 4;
