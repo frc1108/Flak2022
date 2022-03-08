@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 
+
 public class Shoot extends ParallelRaceGroup {
     /**
    * Command that shoots twice and then stops the shooter wheels.

@@ -28,7 +28,7 @@ public final class Constants {
     public static final double kGearRatio = 8.45; // Toughbox mini gear ratio
     public static final double kWheelDiameterMeters = Units.inchesToMeters(6); // Wheel diameter
     // Use sysid angular to determine the best robot wheel width (may not match tape measurer)
-    public static final double kTrackwidthMeters = Units.inchesToMeters(22);
+    public static final double kTrackwidthMeters = Units.inchesToMeters(21.81929134);
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final Boolean kGyroReversed = false; 
@@ -44,6 +44,9 @@ public final class Constants {
     public static final double kvVoltSecondsPerMeter = 2.3243;  //2.24
     public static final double kaVoltSecondsSquaredPerMeter = 0.39228;  //0.0435
     public static final double kPDriveVel = 2.5205;  //2.4 8/14 2.24 Tuning to get better PIDF response
+    public static final double kPTurn = 0.06; //angular 0.37757
+    public static final double kTurnFF = 0.12;
+    public static double kForwardFF = 0.02;
 
     // Log of sysID values
     // Feb12 Drivebase Ks = 0.17387 Kv = 2.3243 Ka = 0.39228 Kp = 2.5205
@@ -67,6 +70,7 @@ public final class Constants {
     public static final double kDriverSlowModifier = 0.4; //modifier for slow mode
   }
   public static final class ShooterConstants {
+
     public static final double kShooterPercent = 38.5;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
@@ -104,4 +108,13 @@ public final class Constants {
     public static final int kLEDPort = 9;
     public static final int kLEDLength = 150;
   }
+  public static final class VisionConstants {
+    public static final double kTargetHeight = Units.inchesToMeters(104);
+    public static final double kReflectiveCameraHeight = Units.inchesToMeters(34);
+    public static final double kReflectiveCameraPitch = Units.degreesToRadians(36);
+    public static final double kTargetDistanceMeters = Units.inchesToMeters(120);
+    public static int kReflectivePipeline = 0;
+  }
+
+
 }

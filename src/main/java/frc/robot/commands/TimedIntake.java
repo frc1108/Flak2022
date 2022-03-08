@@ -25,6 +25,7 @@ public class TimedIntake extends SequentialCommandGroup{
                 m_intake.stopIntake();
             })
         );
+
         addRequirements(m_intake);
     }
 }

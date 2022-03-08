@@ -38,7 +38,5 @@ public class ShootOnce extends ParallelRaceGroup {
             .andThen(new InstantCommand(()->m_shooter.stopShoot())));
         addRequirements(m_shooter);
     }
-
-
     
 }
