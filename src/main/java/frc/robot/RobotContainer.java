@@ -26,7 +26,6 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.shooter.AutoAim;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.commands.ShootOnce;
-import frc.robot.commands.auto.FourBallAuto;
 import frc.robot.commands.auto.FourBallShort;
 import frc.robot.commands.auto.OneBallAuto;
 import frc.robot.commands.auto.TwoBallAuto;
@@ -56,12 +55,9 @@ public class RobotContainer {
   @Log private final LEDSubsystem m_led = new LEDSubsystem();
   @Log public final VisionSubsystem m_vision = new VisionSubsystem();
 
-
-  
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
-  @Log(name = "Auto Mode", tabName = "Live")
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
  // private final SendableChooser<Double> delayChooser = new SendableChooser<>();
   private NetworkTableEntry delay;
@@ -103,12 +99,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //testing kick and shoot code
-
-    new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .toggleWhenActive(new StartEndCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent), ()->m_shooter.stopShoot()));
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter, 0, true));
+        .whenPressed(new Shoot(m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)

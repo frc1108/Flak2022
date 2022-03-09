@@ -84,8 +84,7 @@ public final class Constants {
   }
   public static final class IntakeConstants {
     public static final int kIntakePort = 42;
-    public static final int kIntakeVolts = 6;
-    public static final double kIntakeModifier = 8.5; //12 is the max
+    public static final double kIntakeSpeed = 60*3/25; // Left number is a percent
 
     public static final int kIntakeExtendChannel = 5;
     public static final int kIntakeRetractChannel = 4;

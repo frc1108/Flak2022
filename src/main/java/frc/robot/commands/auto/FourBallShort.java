@@ -35,7 +35,7 @@ public class FourBallShort extends SequentialCommandGroup {
             new TimedKick(m_shooter, 2.7)),
           new InstantCommand(()->m_shooter.tiltUp()),
           //new TimedKick(m_shooter, 1),
-          new Shoot(m_shooter, 1, true),
+          new Shoot(m_shooter),
           parallel(
             new InstantCommand(()->m_shooter.tiltDown()),
             m_robotDrive.createCommandForTrajectory(reverseTurn, false).withTimeout(5).withName("Reverse Turn")),
@@ -78,7 +78,7 @@ public class FourBallShort extends SequentialCommandGroup {
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25)
               )).andThen(new InstantCommand(()->m_intake.stopIntake()))),
-          new Shoot(m_shooter, 1, true),
+          new Shoot(m_shooter),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }

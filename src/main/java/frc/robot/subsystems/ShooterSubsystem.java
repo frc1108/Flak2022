@@ -94,14 +94,23 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
    * Controls the shooting Neo motors.
    * @param speedPercent Speed on a scale from 0 to 100
    */
-  public void shoot(double speedPercent) {
-    double slower = speedPercent-15;
+  public void shoot() {
+    double tiltAdjust = isTiltExtended()?1.85:0;  //61.5 LOL
+    double faster = ShooterConstants.kShooterPercent+tiltAdjust;
+    double slower = faster-15;
     m_leftShooter.setVoltage(convertPercentTo12Volts(slower));
-    m_rightShooter.setVoltage(convertPercentTo12Volts(speedPercent));
+    m_rightShooter.setVoltage(convertPercentTo12Volts(faster));
   } 
-  /* public void shoot(double volts) {
-    m_leftShooter.setVoltage(volts);
-  } */
+  public Boolean isTiltExtended() {
+    Value state = m_tilt.get();
+    if (state==Value.kForward) {
+      return true;
+    } else if(state==Value.kReverse) {
+      return false;
+    } else {
+      return false;
+    }
+  }
 
   /**
    * Controls the kick in redline motor

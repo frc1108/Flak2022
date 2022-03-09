@@ -8,7 +8,7 @@ public class TimedIntake extends SequentialCommandGroup{
     public TimedIntake(IntakeSubsystem m_intake, double seconds) {
         addCommands(
             new RunCommand(() -> {
-                m_intake.intake(0.75);
+                m_intake.intake();
             }).withTimeout(seconds),
             new InstantCommand(() -> {
                 m_intake.stopIntake();
@@ -19,7 +19,7 @@ public class TimedIntake extends SequentialCommandGroup{
     public TimedIntake(IntakeSubsystem m_intake, double seconds, double modifier) {
         addCommands(
             new RunCommand(() -> {
-                m_intake.intake(0.75*modifier);
+                m_intake.intake(modifier);
             }).withTimeout(seconds),
             new InstantCommand(() -> {
                 m_intake.stopIntake();

@@ -45,12 +45,12 @@ public class AutoAim extends CommandBase {
       m_vision.lightsOn();
     }
     else {
-      m_vision.lightsOn();
+      m_vision.lightsOff();
     }
 
     m_rotationPID.setSetpoint(0);
     m_rotationPID.setTolerance(0.05);
-    m_forwardPID.setSetpoint(Units.inchesToMeters(120-24));
+    m_forwardPID.setSetpoint(Units.inchesToMeters(102-24));
     m_forwardPID.setTolerance(0.05);
   }
 
@@ -104,7 +104,7 @@ public class AutoAim extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_vision.lightsOn();
+    m_vision.lightsOff();
   }
 
   // Returns true when the command should end.

@@ -32,7 +32,7 @@ public class TwoBallAuto extends SequentialCommandGroup {
           new InstantCommand(()->m_shooter.tiltUp()),
           m_robotDrive.createCommandForTrajectory(backToTarmac, false).withTimeout(5).withName("Back To Tarmac"),
           new WaitCommand(1),
-          new Shoot(m_shooter, 1, false),
+          new Shoot(m_shooter),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }
