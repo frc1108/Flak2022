@@ -22,11 +22,30 @@ public class Shoot extends ParallelRaceGroup {
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new TimedKick(m_shooter, 0.1, -0.85),
+                new TimedKick(m_shooter, 0.1, -0.55),
                 new WaitCommand(0.35),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
                 new TimedKick(m_shooter, kickTime),
+                new WaitCommand(0.2),
+                new FlipPlate(m_shooter)),
+            //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
+            new RunCommand(()->m_shooter.shoot())
+            .andThen(new InstantCommand(()->m_shooter.stopShoot()))
+            );
+        addRequirements(m_shooter);
+    }
+    public Shoot(ShooterSubsystem m_shooter, double extraKickTime) {
+        addCommands(
+            sequence(
+                new InstantCommand(() -> {
+                m_shooter.plateDown();
+                }),
+                new TimedKick(m_shooter, 0.1, -0.55),
+                new WaitCommand(0.35),
+                new FlipPlate(m_shooter),
+                new WaitCommand(0.1),
+                new TimedKick(m_shooter, kickTime+extraKickTime),
                 new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/

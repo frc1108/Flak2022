@@ -67,11 +67,12 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
     public static final double kOperatorLeftDeadband = 0.1; //the range around zero
-    public static final double kDriverSlowModifier = 0.4; //modifier for slow mode
+    public static final double kDriverSlowModifier = 0.45; //modifier for slow mode
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 38.5;
+    public static final double kShooterPercent = 38.95;
+    public static final double kTiltShotBoost = 1.05;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;

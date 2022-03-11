@@ -100,7 +100,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter));
+        .whenPressed(new Shoot(m_shooter, 0.45));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -137,6 +137,8 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
         .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+    new POVButton(m_driverController, 270)
+        .whenPressed(new InstantCommand(()->m_led.turnOff()));
 
     // While driver holds the A button Auto Aim to the High Hub and range to distance    
     new JoystickButton(m_driverController, XboxController.Button.kA.value)

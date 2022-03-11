@@ -95,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
    * @param speedPercent Speed on a scale from 0 to 100
    */
   public void shoot() {
-    double tiltAdjust = isTiltExtended()?1.85:0;  //61.5 LOL
+    double tiltAdjust = isTiltExtended()?ShooterConstants.kTiltShotBoost:0;  //61.5 LOL
     double faster = ShooterConstants.kShooterPercent+tiltAdjust;
     double slower = faster-15;
     m_leftShooter.setVoltage(convertPercentTo12Volts(slower));

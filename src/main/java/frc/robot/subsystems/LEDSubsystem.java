@@ -30,6 +30,7 @@ public class LEDSubsystem extends SubsystemBase {
       m_buffer.setRGB(i, 255, 0, 0);
    }
    m_led.setData(m_buffer);
+   turnOn();
   }
 
   public void setColor(int red, int green, int blue) {
@@ -38,8 +39,15 @@ public class LEDSubsystem extends SubsystemBase {
       m_buffer.setRGB(i, red, green, blue);
    }
    m_led.setData(m_buffer);
+   turnOn();
   }
 
+  public void turnOff() {
+    m_led.stop();
+  }
+  public void turnOn() {
+    m_led.start();
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

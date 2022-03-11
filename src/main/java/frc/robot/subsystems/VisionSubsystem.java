@@ -21,6 +21,7 @@ public class VisionSubsystem extends SubsystemBase {
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {
     m_reflectiveCamera.setPipelineIndex(VisionConstants.kReflectivePipeline);
+    lightsOff();
   }
 
   @Override
