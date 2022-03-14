@@ -61,6 +61,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
  // private final SendableChooser<Double> delayChooser = new SendableChooser<>();
   private NetworkTableEntry delay;
+  private boolean runLight = false;
   //private double autoDelay = 0;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -100,7 +101,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_shooter));
+        .whenPressed(new Shoot(m_shooter, 0.45));
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -132,11 +133,21 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(()->m_shooter.toggleTilt()));
     new POVButton(m_driverController, 0)
-        .whenPressed(new InstantCommand(()->m_led.setRed()));
+        .whenPressed(()->runLight=false)
+        .whenPressed(new WaitCommand(0.1)
+        .andThen(new InstantCommand(()->m_led.setRed(),m_led)));
     new POVButton(m_driverController, 90)
-        .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
+        .whenPressed(()->runLight=false)
+        .whenPressed(new WaitCommand(0.1)
+        .andThen(new InstantCommand(()->m_led.setColor(255, 100, 0),m_led)));
     new POVButton(m_driverController, 180)
-        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
+        .whenPressed(()->runLight=false)
+        .whenPressed(new WaitCommand(0.1)
+        .andThen(new InstantCommand(()->m_led.setColor(0, 0, 255),m_led)));
+    new POVButton(m_driverController, 270)
+        .whenPressed(new InstantCommand(()->runLight = true))
+        .whenPressed(new RunCommand(()->m_led.chasingHSV(24)).withInterrupt(()->runLight==false));
+
 
     // While driver holds the A button Auto Aim to the High Hub and range to distance    
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
