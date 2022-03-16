@@ -12,13 +12,16 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
@@ -29,12 +32,14 @@ import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallShort;
 import frc.robot.commands.auto.OneBallAuto;
 import frc.robot.commands.auto.TwoBallAuto;
+import frc.robot.subsystems.ColorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -53,9 +58,10 @@ public class RobotContainer {
   @Log private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
   @Log private final LEDSubsystem m_led = new LEDSubsystem();
+  private final ColorSubsystem m_color = new ColorSubsystem();
   @Log public final VisionSubsystem m_vision = new VisionSubsystem();
 
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -148,12 +154,10 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(()->runLight = true))
         .whenPressed(new RunCommand(()->m_led.chasingHSV(24)).withInterrupt(()->runLight==false));
 
-
     // While driver holds the A button Auto Aim to the High Hub and range to distance    
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
         .whileActiveOnce(new AutoAim(m_drive,m_vision,true,m_driverController));
-
-    // 
+ 
   }
 
   /**
@@ -165,6 +169,15 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     return new SequentialCommandGroup(new WaitCommand(delay.getDouble(0)), autoChooser.getSelected());
     //return autoChooser.getSelected();
+  }
+
+  public void setOperatorRumble() {
+    var goodRumble = ((m_color.getBlueFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Blue))||
+                     ((m_color.getRedFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Red));
+    var badRumble = ((m_color.getBlueFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Red))||
+                     ((m_color.getRedFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Blue));
+    m_operatorController.setRumble(GenericHID.RumbleType.kLeftRumble, goodRumble ? 0.2 : 0 );
+    m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, badRumble ? 1 : 0 );
   }
 
   public void reset(){

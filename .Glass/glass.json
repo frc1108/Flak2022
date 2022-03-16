@@ -7,7 +7,7 @@
       "open": true
     },
     "Shuffleboard": {
-      "Live": {
+      "ColorSubsystem": {
         "open": true
       },
       "RobotContainer": {
@@ -36,7 +36,11 @@
       "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -81,6 +85,16 @@
               "id": "NT:/Shuffleboard/Live/Right Shooter Speed"
             }
           ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 338
         }
       ]
     }
