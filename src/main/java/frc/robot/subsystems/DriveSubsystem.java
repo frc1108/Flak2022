@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,8 +38,6 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
-
-
 public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_leftMain = new CANSparkMax(DriveConstants.kLeftMainPort, MotorType.kBrushless);
   private final CANSparkMax m_leftFollow = new CANSparkMax(DriveConstants.kLeftFollowPort, MotorType.kBrushless);
@@ -49,22 +46,20 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMain,m_rightMain);
 
   // Wheel velocity PID control for robot
-  private final PIDController m_leftPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
-  private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
+
+/*   private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
   private final SimpleMotorFeedforward m_leftfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
   private final SimpleMotorFeedforward m_rightfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
+ */
 
   public final double m_slewSpeed = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;  // in units/s
   public final double m_slewTurn = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;
   private final SlewRateLimiter m_speedSlew = new SlewRateLimiter(m_slewSpeed);
   private final SlewRateLimiter m_turnSlew = new SlewRateLimiter(m_slewTurn);
 
-  private final RelativeEncoder m_leftEncoder;
-  private final RelativeEncoder m_rightEncoder;
+  private final RelativeEncoder m_leftEncoder, m_rightEncoder;
   private final DifferentialDriveOdometry m_odometry;
-  // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-
 
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
@@ -90,10 +85,11 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightFollow.setIdleMode(IdleMode.kBrake);
     
     // Set Smart Current Limit for CAN SparkMax
-    m_leftMain.setSmartCurrentLimit(40, 60);
-    m_leftFollow.setSmartCurrentLimit(40, 60);
-    m_rightMain.setSmartCurrentLimit(40, 60);
-    m_rightFollow.setSmartCurrentLimit(40, 60);
+    // Higher Limit at Stall than at Free Speed
+    m_leftMain.setSmartCurrentLimit(60, 55);
+    m_leftFollow.setSmartCurrentLimit(60, 55);
+    m_rightMain.setSmartCurrentLimit(60, 55);
+    m_rightFollow.setSmartCurrentLimit(60, 55);
 
     // Setup NEO internal encoder to return SI units for odometry
     m_leftEncoder = m_leftMain.getEncoder();
@@ -168,13 +164,13 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_drive.feed();
 }
 
-public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double rightVelocitySetpoint) {
+/* public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double rightVelocitySetpoint) {
     m_leftMain.setVoltage(m_leftfeedforward.calculate(leftVelocitySetpoint)
         + m_leftPID.calculate(m_leftEncoder.getVelocity(), leftVelocitySetpoint));
     m_rightMain.setVoltage(m_rightfeedforward.calculate(rightVelocitySetpoint)
         + m_rightPID.calculate(m_rightEncoder.getVelocity(), rightVelocitySetpoint));
   m_drive.feed();
-}
+} */
   
   /***** Gyro methods
    * zeroHeading: sets gyro to zero
@@ -245,11 +241,8 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
 
   /***** Trajectory methods - make paths for robot to follow 
    * createCommandForTrajectory:
-   * loadTrajectory:
    * generateTrajectory:
-   * loadTrajectoryFromFile:
    * generateTrajectoryFromFile:
-   * TODO explain these methods
    */
 
   public Command createCommandForTrajectory(Trajectory trajectory, Boolean initPose) {
@@ -269,10 +262,12 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
+
 /*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
     return TrajectoryUtil.fromPathweaverJson(
         Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
   } */
+
 
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
@@ -283,6 +278,7 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
       return new Trajectory();
     }
   }
+
 /*   public Trajectory loadTrajectoryFromFile(String filename) {
     try {
       return loadTrajectory(filename);
@@ -296,6 +292,4 @@ public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double righ
       var config = new TrajectoryConfig(1, 3);
       return generateTrajectory(filename, config);
   }
-
-  
 }

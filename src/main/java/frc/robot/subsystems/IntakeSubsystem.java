@@ -45,7 +45,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
   public void retract() {
     m_intakeExtender.set(Value.kReverse);
   }
-
+  
   public void stopIntake() {
     m_intake.stopMotor();
   }
@@ -55,8 +55,11 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
     m_intake.setVoltage(IntakeConstants.kIntakeVolts*direction);
 
   } */
-  public void intake(double speed) {
-    m_intake.setVoltage(speed*IntakeConstants.kIntakeModifier);
+  public void intake() {
+    m_intake.setVoltage(IntakeConstants.kIntakeSpeed);
+  }
+  public void intake(double modifier) {
+    m_intake.setVoltage(IntakeConstants.kIntakeSpeed*modifier);
   }
   @Override
   public void periodic() {

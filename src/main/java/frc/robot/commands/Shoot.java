@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 
+
 public class Shoot extends ParallelRaceGroup {
     /**
    * Command that shoots twice and then stops the shooter wheels.
@@ -14,14 +15,14 @@ public class Shoot extends ParallelRaceGroup {
    * @param m_shooter the subsystem obviously
    * @param powerModifierPercent the additional percent to add or subtract to the shooter
    */
-    private double kickTime = 2;
+    private double kickTime = 0.83;
     public Shoot(ShooterSubsystem m_shooter) {
         addCommands(
             sequence(
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new TimedKick(m_shooter, 0.1, -0.5),
+                new TimedKick(m_shooter, 0.1, -0.55),
                 new WaitCommand(0.35),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
@@ -29,49 +30,29 @@ public class Shoot extends ParallelRaceGroup {
                 new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
-            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent))
+            new RunCommand(()->m_shooter.shoot())
             .andThen(new InstantCommand(()->m_shooter.stopShoot()))
             );
         addRequirements(m_shooter);
     }
-    public Shoot(ShooterSubsystem m_shooter, double powerModifierPercent) {
+    public Shoot(ShooterSubsystem m_shooter, double extraKickTime) {
         addCommands(
             sequence(
                 new InstantCommand(() -> {
                 m_shooter.plateDown();
                 }),
-                new TimedKick(m_shooter, 0.1, -0.5),
-                new WaitCommand(0.45),
+                new TimedKick(m_shooter, 0.1, -0.55),
+                new WaitCommand(0.35),
                 new FlipPlate(m_shooter),
                 new WaitCommand(0.1),
-                new TimedKick(m_shooter, kickTime),
+                new TimedKick(m_shooter, kickTime+extraKickTime),
                 new WaitCommand(0.2),
                 new FlipPlate(m_shooter)),
             //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
-            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerModifierPercent))
+            new RunCommand(()->m_shooter.shoot())
             .andThen(new InstantCommand(()->m_shooter.stopShoot()))
             );
         addRequirements(m_shooter);
     }
-    public Shoot(ShooterSubsystem m_shooter, double powerModifierPercent, boolean abbreviatedKick) {
-        double adjustedKickTime = abbreviatedKick ? 0.83 : 2;
-        addCommands(
-            sequence(
-                new InstantCommand(() -> {
-                m_shooter.plateDown();
-                }),
-                new TimedKick(m_shooter, 0.1, -0.5),
-                new WaitCommand(0.45),
-                new FlipPlate(m_shooter),
-                new WaitCommand(0.1),
-                new TimedKick(m_shooter, adjustedKickTime),
-                new WaitCommand(0.2),
-                new FlipPlate(m_shooter)),
-            //new TimedShoot(m_shooter, runTime), //this should give the command group a max runtime of maxTime seconds :/
-            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerModifierPercent))
-            .andThen(new InstantCommand(()->m_shooter.stopShoot()))
-            );
-        addRequirements(m_shooter);
-    }
-    
+
 }

@@ -21,24 +21,8 @@ public class ShootOnce extends ParallelRaceGroup {
                 }),
                 new WaitCommand(0.75),
                 new FlipPlate(m_shooter)),
-            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent))
+            new RunCommand(()->m_shooter.shoot())
             .andThen(new InstantCommand(()->m_shooter.stopShoot())));
         addRequirements(m_shooter);
     }
-
-    public ShootOnce(ShooterSubsystem m_shooter, double powerSpeedModifier) {
-        addCommands(
-            sequence(
-                new InstantCommand(() -> {
-                m_shooter.plateDown();
-                }),
-                new WaitCommand(0.75),
-                new FlipPlate(m_shooter)),
-            new RunCommand(()->m_shooter.shoot(ShooterConstants.kShooterPercent + powerSpeedModifier))
-            .andThen(new InstantCommand(()->m_shooter.stopShoot())));
-        addRequirements(m_shooter);
-    }
-
-
-    
 }

@@ -35,7 +35,7 @@ public class FourBallShort extends SequentialCommandGroup {
             new TimedKick(m_shooter, 2.7)),
           new InstantCommand(()->m_shooter.tiltUp()),
           //new TimedKick(m_shooter, 1),
-          new Shoot(m_shooter, 1, true),
+          new Shoot(m_shooter),
           parallel(
             new InstantCommand(()->m_shooter.tiltDown()),
             m_robotDrive.createCommandForTrajectory(reverseTurn, false).withTimeout(5).withName("Reverse Turn")),
@@ -43,15 +43,15 @@ public class FourBallShort extends SequentialCommandGroup {
             m_robotDrive.createCommandForTrajectory(terminalRun, false).withTimeout(5).withName("Terminal Run").andThen(new WaitCommand(0.55)),
             new TimedKick(m_shooter,10), //this time is long enough that the stop command doesnt get scheduled because of the deadline group
             sequence(
-              new TimedIntake(m_intake, 0.3),
+              new TimedIntake(m_intake, 2),
                 new TimedIntake(m_intake, 0.075, -.25),
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25),
-                new TimedIntake(m_intake, 0.3),
+                new TimedIntake(m_intake, 10)/* ,
                 new TimedIntake(m_intake, 0.075, -.25),
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25),
-                new TimedIntake(m_intake, 10))), 
+                new TimedIntake(m_intake, 10) */)), 
           parallel(
             m_robotDrive.createCommandForTrajectory(returnToHub, false).withTimeout(5).withName("Return To Hub"),
             sequence(
@@ -78,7 +78,7 @@ public class FourBallShort extends SequentialCommandGroup {
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25)
               )).andThen(new InstantCommand(()->m_intake.stopIntake()))),
-          new Shoot(m_shooter, 1, true),
+          new Shoot(m_shooter),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }
