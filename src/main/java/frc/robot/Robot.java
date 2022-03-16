@@ -86,7 +86,9 @@ public class Robot extends TimedRobot  implements Loggable{
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.setOperatorRumble();
+  }
 
   @Override
   public void testInit() {

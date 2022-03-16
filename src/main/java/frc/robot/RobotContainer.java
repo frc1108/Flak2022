@@ -37,6 +37,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -147,11 +148,7 @@ public class RobotContainer {
     new POVButton(m_driverController, 90)
         .whenPressed(new InstantCommand(()->m_led.setColor(255, 100, 0)));
     new POVButton(m_driverController, 180)
-        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255)));
-
-    
-    
-    new Trigger(m_color::getBlueFrontMatch).whileActiveContinuous(new InstantCommand(()->m_operatorController.setRumble(RumbleType.kLeftRumble, 0.5))); 
+        .whenPressed(new InstantCommand(()->m_led.setColor(0, 0, 255))); 
   }
 
   /**
@@ -163,6 +160,15 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     return new SequentialCommandGroup(new WaitCommand(delay.getDouble(0)), autoChooser.getSelected());
     //return autoChooser.getSelected();
+  }
+
+  public void setOperatorRumble() {
+    var goodRumble = ((m_color.getBlueFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Blue))||
+                     ((m_color.getRedFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Red));
+    var badRumble = ((m_color.getBlueFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Red))||
+                     ((m_color.getRedFrontMatch()&&DriverStation.getAlliance()==DriverStation.Alliance.Blue));
+    m_operatorController.setRumble(GenericHID.RumbleType.kLeftRumble, goodRumble ? 0.2 : 0 );
+    m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, badRumble ? 1 : 0 );
   }
 
   public void reset(){
