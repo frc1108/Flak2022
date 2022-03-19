@@ -21,7 +21,7 @@ public class AutoAim extends CommandBase {
   Boolean m_hasShooter;
   XboxController m_driverController;
   PhotonPipelineResult result;
-  PIDController m_forwardPID = new PIDController(DriveConstants.kPDriveVel/4, 0, 0);
+  PIDController m_forwardPID = new PIDController(DriveConstants.kPForward, 0, 0);
   PIDController m_rotationPID = new PIDController(DriveConstants.kPTurn, 0, 0.001);
 
   /** Auto Aim 
@@ -48,10 +48,10 @@ public class AutoAim extends CommandBase {
       m_vision.lightsOff();
     }
 
-    m_rotationPID.setSetpoint(0);
-    m_rotationPID.setTolerance(0.05);
-    m_forwardPID.setSetpoint(Units.inchesToMeters(102-24));
-    m_forwardPID.setTolerance(0.05);
+    m_rotationPID.setSetpoint(DriveConstants.kTurnSetpoint);
+    m_rotationPID.setTolerance(DriveConstants.kTurnTolerance);
+    m_forwardPID.setSetpoint(DriveConstants.kForwardSetpoint);
+    m_forwardPID.setTolerance(DriveConstants.kForwardTolerance);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

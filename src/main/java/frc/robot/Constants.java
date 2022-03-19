@@ -44,9 +44,17 @@ public final class Constants {
     public static final double kvVoltSecondsPerMeter = 2.3243;  //2.24
     public static final double kaVoltSecondsSquaredPerMeter = 0.39228;  //0.0435
     public static final double kPDriveVel = 2.5205;  //2.4 8/14 2.24 Tuning to get better PIDF response
-    public static final double kPTurn = 0.06; //angular 0.37757
-    public static final double kTurnFF = 0.12;
-    public static double kForwardFF = 0.02;
+    
+    // Auto aim constants for drivetrain
+    public static final double kPTurn = 0.029; //angular 0.37757 //0.06
+    public static final double kTurnFF = 0.075; //0.12
+    public static final double kTurnTolerance = 0.05;
+    public static final double kTurnSetpoint = 0.0;
+    public static final double kPForward = 0.063;
+    public static final double kForwardFF = 0.022;
+    public static final double kForwardTolerance = Units.inchesToMeters(2);
+    public static final double kForwardSetpoint = Units.inchesToMeters(102-24);
+
 
     // Log of sysID values
     // Feb12 Drivebase Ks = 0.17387 Kv = 2.3243 Ka = 0.39228 Kp = 2.5205
