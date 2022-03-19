@@ -20,8 +20,10 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.counter.Tachometer;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,6 +39,8 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
   private RelativeEncoder m_leftEncoder, m_rightEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, m_shooterSetpoint, m_shooterTolerance;
 
+  //private final Tachometer m_rightTach = new Tachometer(new DigitalInput(0));
+  private final Tachometer m_leftTach = new Tachometer(new DigitalInput(0));
 
   private final CANSparkMax m_kickIn = new CANSparkMax(ShooterConstants.kKickInPort, MotorType.kBrushed);
   private final DoubleSolenoid m_plate = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, ShooterConstants.kPlateUpChannel, ShooterConstants.kPlateDownChannel);
@@ -74,6 +78,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
     m_rightShooter.burnFlash();
     m_leftShooter.burnFlash();
     m_kickIn.burnFlash();
+
 
     this.setDefaultCommand(new RunCommand(() -> stopAll(), this));
   }
@@ -186,5 +191,10 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
   public void resetSetpoint(){
     m_shooterSetpoint = 1750;
+  }
+
+  @Log
+  public double getLeftTach(){
+    return m_leftTach.getRevolutionsPerMinute();
   }
 }
