@@ -52,7 +52,9 @@ public class Robot extends TimedRobot  implements Loggable{
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_robotContainer.m_vision.lightsOff();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -94,6 +96,7 @@ public class Robot extends TimedRobot  implements Loggable{
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    m_robotContainer.m_vision.lightsOn();
   }
 
   /** This function is called periodically during test mode. */
