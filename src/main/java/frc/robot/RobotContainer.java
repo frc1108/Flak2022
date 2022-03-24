@@ -27,6 +27,7 @@ import frc.robot.commands.ShootOnce;
 import frc.robot.commands.auto.FourBallShort;
 import frc.robot.commands.auto.OneBallAuto;
 import frc.robot.commands.auto.TwoBallAuto;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ColorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -52,6 +53,7 @@ public class RobotContainer {
   @Log private final DriveSubsystem m_drive = new DriveSubsystem();
   @Log private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   @Log private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  @Log private final ClimberSubsystem m_climber = new ClimberSubsystem();
   @Log private final LEDSubsystem m_led = new LEDSubsystem();
   private final ColorSubsystem m_color = new ColorSubsystem();
   @Log public final VisionSubsystem m_vision = new VisionSubsystem();
@@ -92,6 +94,10 @@ public class RobotContainer {
         new RunCommand(
             () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
             m_intake));
+    m_climber.setDefaultCommand(
+        new RunCommand(
+            () -> m_climber.climber(MathUtil.applyDeadband(m_operatorController.getRightY(), OIConstants.kOperatorRightDeadband)),
+            m_climber));
   }
 
   /**
@@ -125,6 +131,8 @@ public class RobotContainer {
     
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whenPressed(new InstantCommand(()->m_intake.toggleExtension(), m_intake));
+    new JoystickButton(m_operatorController, XboxController.Button.kStart.value)
+        .whenPressed(new InstantCommand(()->m_climber.toggleTilt(), m_climber));
     new POVButton(m_operatorController, 0)
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));
     new POVButton(m_operatorController, 180)

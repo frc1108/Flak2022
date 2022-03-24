@@ -75,6 +75,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
     public static final double kOperatorLeftDeadband = 0.1; //the range around zero
+    public static final double kOperatorRightDeadband = 0.1; //the range around zero
     public static final double kDriverSlowModifier = 0.52; //modifier for slow mode
   }
   public static final class ShooterConstants {
@@ -97,6 +98,13 @@ public final class Constants {
 
     public static final int kIntakeExtendChannel = 5;
     public static final int kIntakeRetractChannel = 4;
+  }
+  public static final class ClimberConstants {
+    public static final int kClimberPort = 30;
+    public static final double kClimberSpeed = 30*3/25; // Left number is a percent
+
+    public static final int kClimberExtendChannel = 7;
+    public static final int kClimberRetractChannel = 6;
   }
   public static final class AutoConstants {
     // Adjust the max robot speed during auto trajectories ~80% of max speed
