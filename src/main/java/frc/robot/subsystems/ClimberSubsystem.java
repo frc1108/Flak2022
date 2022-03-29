@@ -53,11 +53,8 @@ public class ClimberSubsystem extends SubsystemBase {
     m_intake.setVoltage(IntakeConstants.kIntakeVolts*direction);
 
   } */
-  public void climber() {
-    m_climber.setVoltage(ClimberConstants.kClimberSpeed);
-  }
-  public void climber(double modifier) {
-    m_climber.setVoltage(ClimberConstants.kClimberSpeed*modifier);
+  public void climber(double speed) {
+    m_climber.setVoltage(12*speed*ClimberConstants.kClimberModifier);
   }
   @Override
   public void periodic() {

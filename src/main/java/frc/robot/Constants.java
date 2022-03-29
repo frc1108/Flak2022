@@ -100,8 +100,8 @@ public final class Constants {
     public static final int kIntakeRetractChannel = 4;
   }
   public static final class ClimberConstants {
-    public static final int kClimberPort = 30;
-    public static final double kClimberSpeed = 30*3/25; // Left number is a percent
+    public static final int kClimberPort = 31;
+    public static final double kClimberModifier = 0.5;
 
     public static final int kClimberExtendChannel = 7;
     public static final int kClimberRetractChannel = 6;
