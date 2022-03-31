@@ -131,7 +131,7 @@ public class RobotContainer {
     
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whenPressed(new InstantCommand(()->m_intake.toggleExtension(), m_intake));
-    new JoystickButton(m_operatorController, XboxController.Button.kStart.value)
+    new JoystickButton(m_operatorController, XboxController.Button.kBack.value)
         .whenPressed(new InstantCommand(()->m_climber.toggleTilt(), m_climber));
     new POVButton(m_operatorController, 0)
         .whenPressed(new InstantCommand(()->m_shooter.plateUp()));

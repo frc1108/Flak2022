@@ -80,7 +80,7 @@ public final class Constants {
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 38.95;
+    public static final double kShooterPercent = 37;
     public static final double kTiltShotBoost = 0.95;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
@@ -101,7 +101,7 @@ public final class Constants {
   }
   public static final class ClimberConstants {
     public static final int kClimberPort = 31;
-    public static final double kClimberModifier = 0.5;
+    public static final double kClimberModifier = -0.9;
 
     public static final int kClimberExtendChannel = 7;
     public static final int kClimberRetractChannel = 6;
