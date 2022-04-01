@@ -77,8 +77,9 @@ public class FourBallShort extends SequentialCommandGroup {
                 new TimedIntake(m_intake, 0.075, -.25),
                 new TimedIntake(m_intake, 0.3),
                 new TimedIntake(m_intake, 0.075, -.25)
-              )).andThen(new InstantCommand(()->m_intake.stopIntake()))),
+              ))/* .andThen(new InstantCommand(()->m_intake.stopIntake())) */),
           new Shoot(m_shooter),
+          new InstantCommand(()->m_intake.stopIntake()),
           new InstantCommand(()->m_shooter.tiltDown())
       );
   }
