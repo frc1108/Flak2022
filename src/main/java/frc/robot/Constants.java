@@ -80,7 +80,7 @@ public final class Constants {
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 34.5;
+    public static final double kShooterPercent = 95;
     public static final double kTiltShotBoost = 0.65;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
