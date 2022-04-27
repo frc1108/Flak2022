@@ -24,7 +24,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.pantherlib.Trajectory6391;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -45,15 +44,8 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_rightFollow = new CANSparkMax(DriveConstants.kRightFollowPort, MotorType.kBrushless);
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMain,m_rightMain);
 
-  // Wheel velocity PID control for robot
-
-/*   private final PIDController m_rightPID = new PIDController(DriveConstants.kPDriveVel, 0, 0);
-  private final SimpleMotorFeedforward m_leftfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
-  private final SimpleMotorFeedforward m_rightfeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,DriveConstants.kvVoltSecondsPerMeter,DriveConstants.kaVoltSecondsSquaredPerMeter);
- */
-
-  public final double m_slewSpeed = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;  // in units/s
-  public final double m_slewTurn = 5; //3*DriveConstants.kMaxSpeedMetersPerSecond;
+  public final double m_slewSpeed = 4.25; // in units/s
+  public final double m_slewTurn = 4.25;
   private final SlewRateLimiter m_speedSlew = new SlewRateLimiter(m_slewSpeed);
   private final SlewRateLimiter m_turnSlew = new SlewRateLimiter(m_slewTurn);
 
@@ -86,10 +78,10 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     
     // Set Smart Current Limit for CAN SparkMax
     // Higher Limit at Stall than at Free Speed
-    m_leftMain.setSmartCurrentLimit(60, 55);
-    m_leftFollow.setSmartCurrentLimit(60, 55);
-    m_rightMain.setSmartCurrentLimit(60, 55);
-    m_rightFollow.setSmartCurrentLimit(60, 55);
+    m_leftMain.setSmartCurrentLimit(46, 40);
+    m_leftFollow.setSmartCurrentLimit(46, 40);
+    m_rightMain.setSmartCurrentLimit(46, 40);
+    m_rightFollow.setSmartCurrentLimit(46, 40);
 
     // Setup NEO internal encoder to return SI units for odometry
     m_leftEncoder = m_leftMain.getEncoder();
@@ -111,6 +103,9 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
 
     // Start robot odometry tracker
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
+    SmartDashboard.putData("Differential Drive", m_drive);
+    SmartDashboard.putData("Gyro", m_gyro);
   }
 
   /**
@@ -119,7 +114,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
-    SmartDashboard.putNumber("Angle",getHeading());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
     SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
   }
@@ -163,14 +157,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_rightMain.setVoltage(rightVolts);
     m_drive.feed();
 }
-
-/* public void tankDriveWithFeedforwardPID(double leftVelocitySetpoint, double rightVelocitySetpoint) {
-    m_leftMain.setVoltage(m_leftfeedforward.calculate(leftVelocitySetpoint)
-        + m_leftPID.calculate(m_leftEncoder.getVelocity(), leftVelocitySetpoint));
-    m_rightMain.setVoltage(m_rightfeedforward.calculate(rightVelocitySetpoint)
-        + m_rightPID.calculate(m_rightEncoder.getVelocity(), rightVelocitySetpoint));
-  m_drive.feed();
-} */
   
   /***** Gyro methods
    * zeroHeading: sets gyro to zero
@@ -262,13 +248,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     return ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
   }
 
-
-/*   protected static Trajectory loadTrajectory(String trajectoryName) throws IOException {
-    return TrajectoryUtil.fromPathweaverJson(
-        Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
-  } */
-
-
   public Trajectory generateTrajectory(String trajectoryName, TrajectoryConfig config) {
     try {
       var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("waypoints", trajectoryName));
@@ -278,15 +257,6 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
       return new Trajectory();
     }
   }
-
-/*   public Trajectory loadTrajectoryFromFile(String filename) {
-    try {
-      return loadTrajectory(filename);
-    } catch (IOException e) {
-      DriverStation.reportError("Failed to load auto trajectory: " + filename, false);
-      return new Trajectory();
-    }
-  } */
 
   public Trajectory generateTrajectoryFromFile(String filename) {
       var config = new TrajectoryConfig(1, 3);

@@ -12,10 +12,10 @@ import frc.robot.Constants.ShooterConstants;
 import io.github.oblarg.oblog.Loggable;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class ShooterSubsystem extends SubsystemBase implements Loggable{
   private final CANSparkMax m_leftShooter = new CANSparkMax(ShooterConstants.kLeftShooterPort, MotorType.kBrushless);
@@ -52,6 +52,9 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable{
 
     
     this.setDefaultCommand(new RunCommand(() -> stopAll(), this));
+
+    // SmartDashboard.putData("Plate",m_plate);
+    // SmartDashboard.putData("Tilt",m_tilt);
   }
 
   public void togglePlate() {

@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import io.github.oblarg.oblog.Loggable;
@@ -30,25 +31,34 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public ClimberSubsystem() {
     stopClimber();
     m_climberTilt.set(Value.kForward);
-
+    
     m_climber.restoreFactoryDefaults();
-
     m_climber.setIdleMode(IdleMode.kBrake);
-
     m_climber.setInverted(false);
-
     m_climber.setSmartCurrentLimit(40, 60);
-
+    
     m_encoder = m_climber.getEncoder();
 
     m_reverseLimit = m_climber.getReverseLimitSwitch(Type.kNormallyOpen);
-    
     m_forwardLimit = m_climber.getForwardLimitSwitch(Type.kNormallyOpen);
 
     m_climber.burnFlash();
     
     resetEncoder();
+
+    // Sendable objects
+    // SmartDashboard.putData("Climber Tilt", m_climberTilt);
   }
+
+  @Override
+  public void periodic() {
+
+    // This method will be called once per scheduler run
+    if(getReverseLimit()) {
+      resetEncoder();
+    }
+  }
+
   public boolean getReverseLimit() {
     return m_reverseLimit.isPressed();
   }
@@ -82,14 +92,6 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
       modifier = 1;
     }
     m_climber.setVoltage(12*speed*modifier*ClimberConstants.kClimberModifier);
-  }
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    if(getReverseLimit()) {
-      resetEncoder();
-    }
-    
   }
 
   @Log

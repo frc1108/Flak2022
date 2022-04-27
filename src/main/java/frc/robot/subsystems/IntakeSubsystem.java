@@ -14,7 +14,7 @@ import io.github.oblarg.oblog.Loggable;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import frc.robot.pantherlib.PicoColorSensor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_intake = new CANSparkMax(IntakeConstants.kIntakePort, MotorType.kBrushless);
@@ -23,17 +23,19 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
     stopIntake();
+
     m_intakeExtender.set(Value.kReverse);
 
     m_intake.restoreFactoryDefaults();
-
     m_intake.setIdleMode(IdleMode.kBrake);
-
     m_intake.setInverted(false);
-
     m_intake.setSmartCurrentLimit(40, 60);
-
+   
+    //SmartDashboard.putData("Intake",m_intakeExtender);
+    
     m_intake.burnFlash();
+
+
   }
   
   public void toggleExtension() {

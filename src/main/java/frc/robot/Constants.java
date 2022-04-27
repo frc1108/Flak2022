@@ -23,6 +23,10 @@ public final class Constants {
     public static final int kRightMainPort = 2;
     public static final int kRightFollowPort = 4;
 
+    public static final double kNormalDriveMaxSpeed = 0.8; //modifier for slow mode
+    public static final double kSlowDriveMaxSpeed = 0.4; //modifier for slow mode
+    public static final double kBurstDriveMaxSpeed = 0.6; //modifier for slow mode
+
     // Physical robot parameters
     public static final int kEncoderCPR = 42;  // NEO motor encoder Counts per revolution
     public static final double kGearRatio = 8.45; // Toughbox mini gear ratio
@@ -76,11 +80,10 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
     public static final double kOperatorLeftDeadband = 0.1; //the range around zero
     public static final double kOperatorRightDeadband = 0.1; //the range around zero
-    public static final double kDriverSlowModifier = 0.52; //modifier for slow mode
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 95;
+    public static final double kShooterPercent = 45;
     public static final double kTiltShotBoost = 0.65;
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.shooter.AutoAim;
@@ -37,7 +38,6 @@ import io.github.oblarg.oblog.annotations.Log;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -74,18 +74,15 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     delay = Shuffleboard.getTab("Live").add("Auto Delay", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties((Map.of("Min", 0, "Max", 10, "Block increment", 1))).getEntry();
-    //autoDelay = delay.getDouble(0);
-    //autoDelay = Shuffleboard.getTab("Live").add("Delay", autoDelay);
-    //delayChooser.setDefaultOption("0", 0.0);
-    //delayChooser.addOption("5", 5.0);
-    //delayChooser.addOption("10", 10.0);
     autoChooser.setDefaultOption("Nothing", new WaitCommand(5));
     autoChooser.addOption("2 Ball Auto", new TwoBallAuto(m_drive, m_shooter, m_intake));
     autoChooser.addOption("Rude 2 Ball Auto", new RudeTwoBallAuto(m_drive, m_shooter, m_intake));
     autoChooser.addOption("TEST Rude 2 Ball Auto", new WIPRudeTwoBallAuto(m_drive, m_shooter, m_intake));
     autoChooser.addOption("4 Ball Auto", new FourBallShort(m_drive, m_shooter, m_intake));
     autoChooser.addOption("1 Ball Auto", new OneBallAuto(m_drive, m_shooter, m_intake));
-    Shuffleboard.getTab("Live").add("Auto Mode",autoChooser).withSize(2, 1);
+    //Shuffleboard.getTab("Live").add("Auto Mode",autoChooser).withSize(2, 1);
+    SmartDashboard.putData("Auto Chooser",autoChooser);
+
     
     
     m_drive.setDefaultCommand(
@@ -94,6 +91,7 @@ public class RobotContainer {
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
             m_drive).withName("Drive Manual"));
+    m_drive.setMaxOutput(DriveConstants.kSlowDriveMaxSpeed);
     m_intake.setDefaultCommand(
         new RunCommand(
             () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
@@ -117,7 +115,7 @@ public class RobotContainer {
         .whileHeld(new RunCommand(()->m_shooter.kick(50), m_shooter));
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileHeld(new RunCommand(()->m_shooter.kick(-25), m_shooter));
-    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+/*     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
         .whileActiveOnce(new RunCommand(
             () -> m_drive.arcadeDrive(
                     (m_driverController.getLeftY()*OIConstants.kDriverSlowModifier),
@@ -125,7 +123,10 @@ public class RobotContainer {
             m_drive
         )).whileActiveOnce(new StartEndCommand(
             () -> m_drive.changeIdleMode(IdleMode.kCoast),
-            () -> m_drive.changeIdleMode(IdleMode.kBrake)));
+            () -> m_drive.changeIdleMode(IdleMode.kBrake))); */
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .whenPressed(()->m_drive.setMaxOutput(DriveConstants.kBurstDriveMaxSpeed))
+        .whenReleased(()->m_drive.setMaxOutput(DriveConstants.kSlowDriveMaxSpeed));
     
     //Below may or may not be a drift button
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
