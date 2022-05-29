@@ -1,14 +1,31 @@
 {
   "HALProvider": {
     "Addressable LEDs": {
+      "0": {
+        "order": 1
+      },
       "window": {
         "visible": true
+      }
+    },
+    "Other Devices": {
+      "ADIS16470[0]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/ClimberSubsystem": "Subsystem",
+      "/LiveWindow/ColorSubsystem": "Subsystem",
       "/LiveWindow/DriveSubsystem": "Subsystem",
       "/LiveWindow/IntakeSubsystem": "Subsystem",
       "/LiveWindow/LEDSubsystem": "Subsystem",
@@ -19,7 +36,17 @@
       "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[24]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -29,10 +56,41 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/VisionSubsystem": "Subsystem",
       "/Shuffleboard/Live/Auto Mode": "String Chooser",
+      "/Shuffleboard/RobotContainer/m_climber": "Subsystem",
       "/Shuffleboard/RobotContainer/m_drive": "Subsystem",
       "/Shuffleboard/RobotContainer/m_intake": "Subsystem",
-      "/Shuffleboard/RobotContainer/m_shooter": "Subsystem"
+      "/Shuffleboard/RobotContainer/m_led": "Subsystem",
+      "/Shuffleboard/RobotContainer/m_shooter": "Subsystem",
+      "/Shuffleboard/RobotContainer/m_vision": "Subsystem",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Differential Drive": "DifferentialDrive",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Gyro": "Gyro"
+    },
+    "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Field": {
+        "open": true
+      },
+      "open": true
+    },
+    "photonvision": {
+      "open": true
     }
   }
 }

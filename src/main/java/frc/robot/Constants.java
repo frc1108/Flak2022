@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -17,7 +21,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class DriveConstants {
-    // CAN IDs for Spark Max drivetrain controllers
+    // Specify CAN IDs for drive motor controllers
     public static final int kLeftMainPort = 1;
     public static final int kLeftFollowPort = 3;
     public static final int kRightMainPort = 2;
@@ -35,9 +39,11 @@ public final class Constants {
     public static final double kTrackwidthMeters = Units.inchesToMeters(21.81929134);
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
+    
+    /* Gyro class in WPIlib is counter-clockwise (CCW) positive,
+       so use `kGyroReversed` to invert gyro, if needed.  Use `true` for 
+       NavX and `false` for ADIS16470. */
     public static final Boolean kGyroReversed = false; 
-    // WPIlib is ccw positive, use to invert gyro match
-    // NavX = true, ADIS16470 = false
 
     // Encoder count conversion on the spark max for NEOs from rotations to SI units 
     public static final double kEncoderDistanceConversionFactor = ((double) (Math.PI*kWheelDiameterMeters)/(kGearRatio));
@@ -59,7 +65,6 @@ public final class Constants {
     public static final double kForwardTolerance = Units.inchesToMeters(2);
     public static final double kForwardSetpoint = Units.inchesToMeters(102-24);
 
-
     // Log of sysID values
     // Feb12 Drivebase Ks = 0.17387 Kv = 2.3243 Ka = 0.39228 Kp = 2.5205
     // Jan16 Drivebase no weight Ks = 0.19627 Kv = 2.7762 Ka = 0.14895 Kp = 2.6295
@@ -74,6 +79,25 @@ public final class Constants {
     // public static final double kTurnToleranceDeg = 4; //0.5
     // public static final double kTurnRateToleranceDegPerS = 8;
     // public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(8);
+
+    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
+    // These characterization values MUST be determined either experimentally or theoretically
+    // for *your* robot's drive.
+    // These two values are "angular" kV and kA
+    public static final double kvVoltSecondsPerRadian = 1.5;
+    public static final double kaVoltSecondsSquaredPerRadian = 0.3;
+
+    public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
+        LinearSystemId.identifyDrivetrainSystem(
+            kvVoltSecondsPerMeter,
+            kaVoltSecondsSquaredPerMeter,
+            kvVoltSecondsPerRadian,
+            kaVoltSecondsSquaredPerRadian);
+
+    // Example values only -- use what's on your physical robot!
+    public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
+    public static final double kDriveGearing = 8.45;
+
   }
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;

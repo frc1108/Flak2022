@@ -191,4 +191,13 @@ public class RobotContainer {
   public void reset(){
     m_drive.resetOdometry(new Pose2d());
   }
+
+  public DriveSubsystem getRobotDrive() {
+    return m_drive;
+  }
+
+  /** Zeros the outputs of all subsystems. */
+  public void zeroAllOutputs() {
+    m_drive.tankDriveVolts(0, 0);
+  }
 }

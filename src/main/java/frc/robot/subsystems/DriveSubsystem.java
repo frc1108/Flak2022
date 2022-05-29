@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -15,6 +18,12 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.ADIS16470_IMUSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -36,6 +45,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 
 public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final CANSparkMax m_leftMain = new CANSparkMax(DriveConstants.kLeftMainPort, MotorType.kBrushless);
@@ -52,6 +63,13 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   private final RelativeEncoder m_leftEncoder, m_rightEncoder;
   private final DifferentialDriveOdometry m_odometry;
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  private final ADIS16470_IMUSim m_gyroSim;
+
+  // These classes help us simulate our drivetrain
+  public DifferentialDrivetrainSim m_drivetrainSimulator;
+  
+  // The Field2d class shows the field in the sim GUI
+  private final Field2d m_fieldSim;
 
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem() {
@@ -101,11 +119,29 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     m_drive.setDeadband(0.05);
     m_drive.setSafetyEnabled(true);
 
+    if (RobotBase.isSimulation()) { //If our robot is simulated
+      m_drivetrainSimulator = 
+      new DifferentialDrivetrainSim(
+        DriveConstants.kDrivetrainPlant,
+        DriveConstants.kDriveGearbox,
+        DriveConstants.kDriveGearing,
+        DriveConstants.kTrackwidthMeters,
+        DriveConstants.kWheelDiameterMeters / 2.0,
+          VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
+
+          m_gyroSim = new ADIS16470_IMUSim(m_gyro);
+    } else {
+      m_gyroSim = null;
+    }
+
+    m_fieldSim = new Field2d();
+
     // Start robot odometry tracker
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
     SmartDashboard.putData("Differential Drive", m_drive);
     SmartDashboard.putData("Gyro", m_gyro);
+    SmartDashboard.putData("Field", m_fieldSim);
   }
 
   /**
@@ -115,7 +151,56 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   public void periodic() {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("Left Dist", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());  
+    SmartDashboard.putNumber("Right Dist", m_rightEncoder.getPosition());
+    
+    // Place our robot on the field based on our odometry
+    m_fieldSim.setRobotPose(getPose());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+
+    // Set the inputs to the drivesim based on the current robot voltage
+    // Note: The motor controllers give us a negative output value because they are inverted, so we have to invert that value.
+    m_drivetrainSimulator.setInputs(
+      -m_leftMain.get()*RobotController.getInputVoltage(),
+      -m_rightMain.get()*RobotController.getInputVoltage());
+    m_drivetrainSimulator.update(0.020);
+
+    // Update the Spark Max positions
+    setSimDoubleFromDeviceData("SPARK MAX [1]", "Position", m_drivetrainSimulator.getLeftPositionMeters());
+    setSimDoubleFromDeviceData("SPARK MAX [3]", "Position", m_drivetrainSimulator.getLeftPositionMeters());
+    setSimDoubleFromDeviceData("SPARK MAX [2]", "Position", m_drivetrainSimulator.getRightPositionMeters());
+    setSimDoubleFromDeviceData("SPARK MAX [4]", "Position", m_drivetrainSimulator.getRightPositionMeters());
+
+    // Update the Spark Max applied outputs
+    setSimDoubleFromDeviceData("SPARK MAX [1]", "Applied Output", m_leftMain.get());
+    setSimDoubleFromDeviceData("SPARK MAX [3]", "Applied Output", m_leftMain.get());
+    setSimDoubleFromDeviceData("SPARK MAX [2]", "Applied Output", m_rightMain.get());
+    setSimDoubleFromDeviceData("SPARK MAX [4]", "Applied Output", m_rightMain.get());
+    m_gyroSim.setGyroAngleX(-m_drivetrainSimulator.getHeading().getDegrees());
+  }
+
+  /**
+   * Modify the JSON of the specified object to set the SIM Double
+   * @param deviceName
+   * @param doubleName
+   * @param value
+   */
+  public void setSimDoubleFromDeviceData(String deviceName, String doubleName, double value) {
+    int device = SimDeviceDataJNI.getSimDeviceHandle(deviceName);
+    SimDouble simDouble = new SimDouble(SimDeviceDataJNI.getSimValueHandle(device, doubleName));
+    simDouble.set(value);
+  }
+
+    /**
+   * Returns the current being drawn by the drivetrain. This works in SIMULATION ONLY! If you want
+   * it to work elsewhere, use the code in {@link DifferentialDrivetrainSim#getCurrentDrawAmps()}
+   *
+   * @return The drawn current in Amps.
+   */
+  public double getDrawnCurrentAmps() {
+    return m_drivetrainSimulator.getCurrentDrawAmps();
   }
 
   /***** Drivetrain methods
@@ -218,6 +303,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     zeroHeading();
+    m_drivetrainSimulator.setPose(pose);
     m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
   }
 

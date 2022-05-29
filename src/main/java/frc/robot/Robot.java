@@ -7,6 +7,8 @@ package frc.robot;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -18,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot  implements Loggable{
   private Command m_autonomousCommand;
-  private RobotContainer m_robotContainer = new RobotContainer();
+  private RobotContainer m_robotContainer; // = new RobotContainer();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,8 +30,24 @@ public class Robot extends TimedRobot  implements Loggable{
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
     Logger.configureLoggingAndConfig(m_robotContainer, false);
     m_robotContainer.reset();
+
+    // Flush NetworkTables every loop. This ensures that robot pose and other values
+    // are sent during every loop iteration.
+    setNetworkTablesFlushEnabled(true);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // Here we calculate the battery voltage based on drawn current.
+    // As our robot draws more power from the battery its voltage drops.
+    // The estimated voltage is highly dependent on the battery's internal
+    // resistance.
+    double drawCurrent = m_robotContainer.getRobotDrive().getDrawnCurrentAmps();
+    double loadedVoltage = BatterySim.calculateDefaultBatteryLoadedVoltage(drawCurrent);
+    RoboRioSim.setVInVoltage(loadedVoltage);
   }
 
   /**
@@ -53,7 +71,9 @@ public class Robot extends TimedRobot  implements Loggable{
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    CommandScheduler.getInstance().cancelAll();
     m_robotContainer.m_vision.lightsOff();
+    m_robotContainer.zeroAllOutputs();
   }
 
   @Override
