@@ -178,7 +178,7 @@ public class DriveSubsystem extends SubsystemBase implements Loggable {
     setSimDoubleFromDeviceData("SPARK MAX [3]", "Applied Output", m_leftMain.get());
     setSimDoubleFromDeviceData("SPARK MAX [2]", "Applied Output", m_rightMain.get());
     setSimDoubleFromDeviceData("SPARK MAX [4]", "Applied Output", m_rightMain.get());
-    m_gyroSim.setGyroAngleX(-m_drivetrainSimulator.getHeading().getDegrees());
+    m_gyroSim.setGyroAngleZ(-m_drivetrainSimulator.getHeading().getDegrees());
   }
 
   /**
