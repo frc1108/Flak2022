@@ -91,7 +91,7 @@ public class RobotContainer {
                     m_driverController.getLeftY(),
                     m_driverController.getRightX()),
             m_drive).withName("Drive Manual"));
-    m_drive.setMaxOutput(DriveConstants.kSlowDriveMaxSpeed);
+    m_drive.setMaxOutput(DriveConstants.kNormalDriveMaxSpeed);
     m_intake.setDefaultCommand(
         new RunCommand(
             () -> m_intake.intake(MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kOperatorLeftDeadband)),
