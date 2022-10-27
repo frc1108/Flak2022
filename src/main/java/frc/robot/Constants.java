@@ -23,7 +23,7 @@ public final class Constants {
     public static final int kRightMainPort = 2;
     public static final int kRightFollowPort = 4;
 
-    public static final double kNormalDriveMaxSpeed = 0.8; //modifier for slow mode
+    public static final double kNormalDriveMaxSpeed = 0.85; //modifier for slow mode
     public static final double kSlowDriveMaxSpeed = 0.4; //modifier for slow mode
     public static final double kBurstDriveMaxSpeed = 0.6; //modifier for slow mode
 
@@ -83,8 +83,8 @@ public final class Constants {
   }
   public static final class ShooterConstants {
 
-    public static final double kShooterPercent = 45;
-    public static final double kTiltShotBoost = 0.65;
+    public static final double kShooterPercent = 38.95; //41
+    public static final double kTiltShotBoost = 0.95; //0.65
     public static final int kLeftShooterPort = 20;
     public static final int kRightShooterPort = 21;
     public static final int kKickInPort = 41;
